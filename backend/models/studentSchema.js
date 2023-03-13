@@ -3,7 +3,6 @@ const studentSchema = new mongoose.Schema({
     name : {
         type:String,
         required : [true,"provide studentName"],
-        
     },
     rollNo :{
         type:String,
@@ -13,7 +12,6 @@ const studentSchema = new mongoose.Schema({
     email:{
         type:String,
         required : [true,"provide email"],
-        unique :true
     },
     branch:{
         type:String,

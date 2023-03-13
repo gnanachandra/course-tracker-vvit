@@ -3,7 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require("cors");
 const connectDB = require('./config/connectDB');
-const router = require('./routes/adminRoutes');
+const adminRouter = require('./routes/adminRoutes');
+const studentRouter = require('./routes/studentRoutes');
 const PORT = process.env.PORT || 4000;
 
 
@@ -24,4 +25,5 @@ app.get('/',(req,res)=>{
     res.json({message:"Hello world"});
 })
 
-app.use('/api/admin',router);
+app.use('/api/admin',adminRouter);
+app.use('/api/student',studentRouter);

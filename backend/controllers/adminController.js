@@ -1,4 +1,7 @@
 const Platform = require("../models/Platform");
+const Student = require("../models/studentSchema");
+const bcrypt = require("bcrypt");
+
 
 const addPlatform = async(req,res) =>{
     const {platformName,courseName} = req.body;
@@ -103,9 +106,58 @@ const deleteCourse = async(req,res) =>{
             });
             isPlatformExists['courses'] = newCourses;
             isPlatformExists.save();
-            return res.status(201).json({message : "Course deleted !"});
+            return res.status(200).json({message : "Course deleted !"});
         }
 
     }
 }
-module.exports = {addPlatform, addCourse,deletePlatform,deleteCourse};
+
+
+
+const deleteStudent = async(req,res) =>{
+    const rollNo = req.params.rollNo;
+    const studentExists = await Student.findOne({rollNo});
+    if(studentExists){
+        try{
+            const studentData = await Student.findOneAndDelete({rollNo});
+            return res.status(200).json({message : "Student Data deleted !"});
+        }
+        catch(err)
+        {
+            return res.status(500).json({message : err.message});
+        }
+    }
+    else{
+        return res.status(404).json({message : "Student Not found !"});
+    }
+}
+
+const updateStudent = async(req,res) =>{
+    const rollNo = req.params.rollNo;
+    if('password' in req.body)
+    {
+        const hashedPassword = await bcrypt.hash(req.body.password,10);
+        req.body.password = hashedPassword;
+    }
+    const studentData = await Student.findOne({rollNo})
+    if(!studentData)
+    {
+        return res.status(404).json({message : "Details Not found !"});
+    }
+    else{
+        try{
+            for(let key in req.body)
+            {
+                studentData[key] = req.body[key];
+            }
+            await studentData.save();
+            return res.status(200).json({message : "Details updated",studentData});
+        }
+        catch(err){
+            return res.status(500).json({message : err.message});
+        }
+    }
+}
+
+
+module.exports = {addPlatform, addCourse,deletePlatform,deleteCourse,updateStudent,deleteStudent};
