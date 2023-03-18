@@ -1,0 +1,45 @@
+.outerRegisterationDiv{
+    background-color: whitesmoke;
+    min-height: 80vh;
+}
+.registeration{
+    background-color: white;
+}
+.registerationForm{
+    background-color: white;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    column-gap:3rem;
+    row-gap: 1.5rem;
+    width: 60vw;
+    margin: auto;
+    align-items: center;
+}
+#register{
+    
+    grid-column-start: 2;
+    grid-column-end: 3;
+    width: 100%;
+    justify-self: center;
+}
+.invisible{
+    display: none;
+}
+#error{
+    background-color: burlywood;
+    color: black;
+    width: 10%;
+    height: 30%;  
+}
+@media screen and (max-width:760px) {
+    .registerationForm{
+        display: grid;
+        align-items: center;
+        justify-content: center;
+        grid-template-columns: none;
+    }
+    #register{
+        grid-column-end: 1;
+        width: 50%;
+    }
+}

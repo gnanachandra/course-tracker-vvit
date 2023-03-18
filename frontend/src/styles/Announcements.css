@@ -1,0 +1,18 @@
+.announcementsList{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    column-gap: 2rem;
+    row-gap: 2rem;
+}
+h1{
+    text-align: center;
+}
+
+@media screen and (max-width:760px) {
+    .announcementsList{
+        display: grid;
+        align-items: center;
+        justify-content: center;
+        grid-template-columns: none;
+    }
+}

@@ -1,0 +1,13 @@
+.homePage{
+    padding: 3rem;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    column-gap: 3rem;
+    justify-content: center;
+    align-items: center;
+    padding-top: 7rem;
+}
+img{
+    height: 20rem;
+    width: 20rem;
+}

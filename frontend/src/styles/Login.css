@@ -1,0 +1,15 @@
+.outerLoginDiv{
+    background-color: rgb(240,244,248);
+    padding: 3rem;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.loginDiv{
+    padding: 3rem;
+}
+.loginForm{
+    display: grid;
+    row-gap: 1rem;
+}

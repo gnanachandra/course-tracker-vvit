@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Platform = new mongoose.Schema({
+const CourseCatalog = new mongoose.Schema({
     platformName : {
         type:String,
         required : [true,"Provide course platform Name !"]
@@ -8,10 +8,12 @@ const Platform = new mongoose.Schema({
     courses :[
         {
             type : String,
-            required : [true, "Provide course name !"],
-            unique : true
+            unique : true,
+            default : []
         }
     ]
+},{
+    timestamps : true
 });
 
-module.exports = new mongoose.model('PlatformCourses',Platform);
+module.exports = new mongoose.model('Catalog',CourseCatalog,'catalog');

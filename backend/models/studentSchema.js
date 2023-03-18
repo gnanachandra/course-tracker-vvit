@@ -39,6 +39,10 @@ const studentSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Course'
     }],
+    queries : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Query'
+    }],
     role:{
         type:String,
         default : "Student"

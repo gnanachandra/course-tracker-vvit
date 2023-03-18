@@ -1,8 +1,43 @@
-const Platform = require("../models/Platform");
+const Catalog = require("../models/CourseCatalog");
 const Student = require("../models/studentSchema");
 const bcrypt = require("bcrypt");
+const asyncHandler = require("express-async-handler");
+//admin login
+const Login = asyncHandler(async (req, res, next) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(StatusCodes.BAD_REQUEST).json({Error: "Please fill all details"});
+    }
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(StatusCodes.NOT_FOUND).json({ Error:"User not found !"});
+    }
+  
+    const isPasswordMatched = await admin.comparePassword(password);
+    if (!isPasswordMatched) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message:"Invalid Credentials !"});
+    }
+    const token = admin.createJWT();
+    const adminData = await Admin.findOne({_id:admin._id}).select('-password');
+    return res.status(StatusCodes.OK).json({ adminData, token });
+});
 
+//add admin
+const addAdmin = asyncHandler(async(req, res, next) => {
+    const { name, image, email, password, mobile} = req.body;
+    if ( !name || !image || !email || !password || !mobile ) {
+      return res.status(StatusCodes.BAD_REQUEST).json({Error: "Please fill all details"});
+    }
+    const isAdmin = await Admin.findOne({ email });
+    if(isAdmin) {
+      return res.status(StatusCodes.CONFLICT).json({ message:"Admin Already Exists !"});
+    }
+    const admin = await Admin.create(req.body);
+    const adminData = await Admin.findOne({_id:admin._id}).select('-password');
+    return res.status(StatusCodes.CREATED).json({  msg: "Admin Added ",adminData });
+});
 
+  
 const addPlatform = async(req,res) =>{
     const {platformName,courseName} = req.body;
     if(!platformName || !courseName){
@@ -112,8 +147,6 @@ const deleteCourse = async(req,res) =>{
     }
 }
 
-
-
 const deleteStudent = async(req,res) =>{
     const rollNo = req.params.rollNo;
     const studentExists = await Student.findOne({rollNo});
@@ -159,5 +192,20 @@ const updateStudent = async(req,res) =>{
     }
 }
 
-
-module.exports = {addPlatform, addCourse,deletePlatform,deleteCourse,updateStudent,deleteStudent};
+const getStudentData = async(req,res) =>{
+    const rollNo = req.params.rollNo;
+    if(!rollNo){
+        return res.status(400).json({message :"Enter all details !"});
+    }
+    else{
+        const studentInfo = await Student.findOne({rollNo});
+        if(!studentInfo)
+        {
+            return res.status(404).json({message : "Student Not found !"});
+        }
+        else{
+            return res.status(200).json({message : "Student Data sent !",data : await studentInfo.populate('courses queries')});
+        }
+    }
+}
+module.exports = {Login,addAdmin,addPlatform, addCourse,deletePlatform,deleteCourse,updateStudent,deleteStudent,getStudentData};

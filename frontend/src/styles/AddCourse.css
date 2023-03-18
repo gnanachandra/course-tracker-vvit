@@ -1,0 +1,12 @@
+.outerFormDiv{
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
+.addCourseForm{
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    gap: 2rem;
+    width: 15rem;
+}
