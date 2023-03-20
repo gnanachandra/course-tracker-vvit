@@ -1,15 +1,21 @@
-.outerLoginDiv{
-    background-color: rgb(240,244,248);
-    padding: 3rem;
+.logindiv{
     display: grid;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-.loginDiv{
-    padding: 3rem;
+    gap: 2rem;
 }
 .loginForm{
+    margin: 2rem 30rem;
     display: grid;
-    row-gap: 1rem;
+    gap:2rem;
 }
+@media screen and (max-width: 768px) {
+    .loginForm {
+      margin: 1rem 15%;
+    }
+  }
+  
+  @media screen and (max-width: 1024px) {
+    .loginForm {
+      margin: 2rem 15%;
+    }
+  }
+  

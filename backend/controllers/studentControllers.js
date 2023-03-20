@@ -19,9 +19,10 @@ const handleNewStudent = async(req,res) =>{
         else{
             const hashedPassword =await  bcrypt.hash(req.body.password, 10);
             req.body.password = hashedPassword;
+            
             try{
                 const newStudent = await Student.create(req.body);
-                return res.status(201).json({message : "Student Enrolled !"});
+                return res.status(200).json({message : "Student Enrolled !"});
             }
             catch(err){
                 return res.status(500).json({message : err.message});
@@ -29,6 +30,26 @@ const handleNewStudent = async(req,res) =>{
         }
     }
 }
+
+const login = asyncHandler(async(req,res)=>{
+    const {email,password} = req.body;
+    if(!email || !password)
+    {
+      return res.status(400).json({message : "Enter all details !"});
+    }
+    const studentData = await Student.findOne({email});
+    if(!studentData)
+    {
+      return res.status(404).json({message : "Student not registered !"});
+    }
+    const passwordValid = await bcrypt.compare(password,studentData['password']);
+    if(passwordValid)
+    {
+      return res.status(200).json({message : "Login successfull !"});
+    }
+    return res.status(401).json({message : "Invalid credentials !"});
+});
+
 
 const addCourseController = async (req, res) => {
 
@@ -101,4 +122,4 @@ const submitQuery = asyncHandler(async(req,res)=>{
 })
 
 
-module.exports = {handleNewStudent,addCourseController,submitQuery};
+module.exports = {login,handleNewStudent,addCourseController,submitQuery};
