@@ -1,55 +1,75 @@
 import { TextField, MenuItem, Button } from "@mui/material";
 import React from "react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import "../../styles/AddCourse.css";
 import { errorToast, successToast, warningToast } from "../../util/ToastHelper";
-import {AICTE_Courses,APSCHE_Courses,platforms,Sem,} from "../../Data/data";
+import { AICTE_Courses, APSCHE_Courses, platforms, Sem } from "../../Data/data";
 import BackDrop from "../BackDrop";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 
 const AddCourse = () => {
+  const navigate = useNavigate();
+  const [data,setData] = useState({});
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
-    email: "20bq1a05p2@vvit.net",
-    platform: "",
+    platformName: "",
     courseName: "",
     enrolledIn: "",
   });
+
   const handleFormChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    async function fetchData(){
+      const response = await axios.get("http://localhost:5000/api/admin/getCatalog");
+      console.log(response);
+    }
+    fetchData();
+  }, [])
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setOpen(true);
-    const response = await fetch("http://localhost:4000/addCourse", {
-      method: "POST",
-      body: JSON.stringify(form),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
-    const body = await response.json();
-    setOpen(false);
-    if (body.message === "user enrolled in the course") {
-      successToast("Course Added Successfully")
-    } else if (body.message === "user already enrolled in the course") {
-      warningToast("Duplicate Enrollment")
-    } else {
-      errorToast("something went wrong");
+    try {
+      const response = await axios.post("http://localhost:4000/api/student/course/new",form,
+          {
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+          }
+        );
+        setOpen(false);
+      console.log(response);
+      setOpen(false);
+      if (response.status === 200) {
+        successToast(response.data.message);
+        setTimeout(()=>{
+          navigate('/home');
+        },2000);
+      } else {
+        warningToast(response.data.message);
+      }
+    } catch (err) {
+      setOpen(false);
+      errorToast(err.response.data.message);
     }
-    
   };
   return (
     <div className="outerFormDiv">
-      <form onSubmit={handleSubmit}  className="addCourseForm">
+      <form onSubmit={handleSubmit} className="addCourseForm">
         <TextField
           required
           label="Select Platform"
-          name="platform"
+          name="platformName"
           select
           fullWidth
-          value={form.platform}
+          value={form.platformName}
           onChange={handleFormChange}
         >
           {platforms.map((name) => {
@@ -60,6 +80,7 @@ const AddCourse = () => {
             );
           })}
         </TextField>
+        
 
         <TextField
           label="Select Course"
@@ -70,7 +91,7 @@ const AddCourse = () => {
           onChange={handleFormChange}
           required
         >
-          {form.platform === "AICTE" &&
+          {form.platformName === "AICTE" &&
             AICTE_Courses.map((name) => {
               return (
                 <MenuItem value={name} key={name}>
@@ -78,7 +99,7 @@ const AddCourse = () => {
                 </MenuItem>
               );
             })}
-          {form.platform === "APSCHE" &&
+          {form.platformName === "APSCHE" &&
             APSCHE_Courses.map((name) => {
               return (
                 <MenuItem value={name} key={name}>
@@ -106,11 +127,11 @@ const AddCourse = () => {
           })}
         </TextField>
 
-        <Button variant="contained" type="submit" >
+        <Button variant="contained" type="submit">
           Add Course
         </Button>
-        <BackDrop open={open}/>
-        <ToastContainer/>
+        <BackDrop open={open} />
+        <ToastContainer />
       </form>
     </div>
   );

@@ -14,7 +14,7 @@ const adminSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: validator.isEmail,
-      message: "not a valid email",
+      message: "Not a valid email",
     },
     required: [true, "Email can't be empty"],
   },
@@ -27,22 +27,26 @@ const adminSchema = new mongoose.Schema({
   resetPasswordExpire: Date,
 });
 
+// Hash the password before saving it to the database
 adminSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
+// Generate JWT token for authentication
 adminSchema.methods.createJWT = function () {
   return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_LIFETIME,
   });
 };
 
+// Compare the entered password with the hashed password
 adminSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
+// Generate reset password token
 adminSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
   this.resetPasswordToken = crypto
@@ -53,4 +57,4 @@ adminSchema.methods.getResetPasswordToken = function () {
   return resetToken;
 };
 
-module.exports = new mongoose.model("Admin", adminSchema);
+module.exports = mongoose.model("Admin", adminSchema);

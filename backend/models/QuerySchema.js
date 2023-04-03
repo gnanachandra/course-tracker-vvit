@@ -1,21 +1,29 @@
 const mongoose = require("mongoose");
 
-const QuerySchema = new mongoose.Schema({
-    title : {
-        type : String,
-        required : [true,"Provide title !"]
+const QuerySchema = new mongoose.Schema(
+  {
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Student",
+      required: true,
     },
-    description : {
-        type : String,
-        required : [true, "Provide Description"]
+    title: {
+      type: String,
+      required: [true, "Title cannot be empty"],
     },
-    active : {
-        type : Boolean,
-        default : true
+    description: {
+      type: String,
+      required: [true, "Description cannot be empty"],
     },
-    photo : {
-        type : "String"
-    } 
-});
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    photo: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
 
-module.exports = new mongoose.model("Query",QuerySchema);
+module.exports = mongoose.model("Query", QuerySchema);
