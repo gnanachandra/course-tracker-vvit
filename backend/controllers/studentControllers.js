@@ -99,30 +99,109 @@ const addCourseController = asyncHandler(async (req, res) => {
   }
 });
 
-
-const submitQuery = asyncHandler(async(req,res)=>{
-  if(!req.body.title || !req.body.description || !req.body.email)
+const submitQuery = asyncHandler(async(req,res,next)=>{
+  const {title,description} = req.body;
+  const studentId = req.userId;
+  if(!title || !description || !studentId)
   {
-    return res.status(StatusCodes.BAD_REQUEST).json({message : "Fill all the details !"})
+    return res.status(StatusCodes.BAD_REQUEST).json({message : "Fill all the details !"});
   }
-  const studentData = await Student.findOne({email : req.body.email});
-  if(!studentData){
-    return res.status(StatusCodes.NOT_FOUND).json({message : "Student Not Found !"});
+  try{
+    const newQuery = await Query.create({title,description,student : studentId});
+    return res.status(StatusCodes.OK).json({message : "New query submitted !"});
   }
-  else{
-    try{
-      const newQuery = await Query.create(req.body);
-      const queries = studentData['queries'];
-      queries.push(newQuery._id);
-      studentData.save();
-      return res.status(201).json({message : "Query Submitted !"});
-    }
-    catch(err)
-    {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
-    }
+  catch(err)
+  {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
   }
+});
+
+const updateCourse = asyncHandler(async(req,res,next)=>{
+  const courseId = req.params.courseId;
+  const updatedData = req.body;
+  if(!courseId)
+  {
+    return res.status(StatusCodes.BAD_REQUEST).json({message : "Course Id is missing !"});
+  }
+  const courseData = await Course.findById(courseId);
+  if(!courseData)
+  {
+    return res.status(StatusCodes.NOT_FOUND).json({message : "Course not found !"});
+  }
+  try{
+    const response = await Course.findByIdAndUpdate(courseId,updatedData);
+    return res.status(StatusCodes.OK).json({message : "Course details updated !"});
+  }
+  catch(err)
+  {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message,updatedData : response});
+  }
+});
+
+const deleteCourse = asyncHandler(async(req,res,next)=>{
+  const courseId = req.params.courseId;
+  if(!courseId)
+  {
+    return res.status(StatusCodes.BAD_REQUEST).json({message : "course id not received !"});
+  }
+  const courseData = await Course.findById(courseId);
+  if(!courseData)
+  {
+    return res.status(404).json({message : "Course not found !"});
+  }
+  try{
+    const response = await Course.findOneAndDelete({courseId});
+    return res.status(StatusCodes.OK).json({message : "Course deleted !"});
+  }
+  catch(err)
+  {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+  }
+});
+
+const updateProfile = asyncHandler(async(req,res,next)=>{
+  const updatedData = req.body;
+  if(!updatedData)
+  {
+    return res.status(StatusCodes.OK).json({message : "no change in details !"});
+  }
+  const user = await Student.findById(req.userId);
+  if(!user)
+  {
+    return res.status(StatusCodes.NOT_FOUND).json({message : "user not found !"});
+  }
+  try{
+    const response = await Student.findByIdAndUpdate(req.userId,updatedData,{
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    });
+    return res.status(StatusCodes.OK).json({message : "Profile Updated !",updatedData : response});
+  }
+  catch(err)
+  {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+  }
+});
+
+const updatePassword = asyncHandler(async(req,res,next)=>{
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return res.status(StatusCodes.BAD_REQUEST).json({message: "Please fill all details"});
+  }
+  const student = await Student.findById(req.userId);
+  const isPasswordMatched = await student.confirmPassword(oldPassword);
+  if (!isPasswordMatched) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message:"Invalid Credentials !"});
+  }
+  if (newPassword !== confirmPassword) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message:"Password and Confirm Password must be same !"});
+  }
+  if (oldPassword === newPassword) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message:"New Password must be different from Old Password"});
+  }
+  student.password = newPassword;
+  await student.save();
+  return res.status(StatusCodes.OK).json({ message: "password updated",updatedData : student});
 })
-
-
-module.exports = {login,handleNewStudent,addCourseController,submitQuery};
+module.exports = {login,handleNewStudent,addCourseController,submitQuery,updateProfile,deleteCourse,updateCourse};

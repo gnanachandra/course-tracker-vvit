@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const Admin = require("../models/Admin");
 const asyncHandler = require("express-async-handler");
 const {StatusCodes} = require("http-status-codes");
+const { Query } = require("mongoose");
 
 //admin login
 
@@ -207,5 +208,19 @@ const getCatalogData = asyncHandler(async(req,res) => {
         return res.status(500).json({message : err.message});
     }
 });
+
+//get queries
+const getQueries = asyncHandler(async(req,res,next)=>{
+    try{
+        const queries = await Query.find({active : true});
+        return res.status(StatusCodes.OK).json({message : "queries data sent !",data : queries}); 
+    }
+    catch(err)
+    {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+    }
+});
+
+
 
 module.exports = {Login,addAdmin,addPlatform, addCourse,deletePlatform,deleteCourse,updateStudent,deleteStudent,getStudentData,getCatalogData};
