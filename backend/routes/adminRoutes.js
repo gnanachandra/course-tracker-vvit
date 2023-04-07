@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const {Login,addAdmin,addPlatform, addCourse, deletePlatform, deleteCourse, deleteStudent, updateStudent, getStudentData, getCatalogData} = require('../controllers/adminController');
+const {login,addAdmin,addPlatform, addCourse, deletePlatform, deleteCourse, deleteStudent, updateStudent, getStudentData, getCatalogData} = require('../controllers/adminControllers');
 const  isAuthenticated  = require("../middleware/verifyJWT");
 
 
-router.route('/login').post(Login);
-router.route('/addAdmin').post(addAdmin);
+router.route('/login').post(login);
+router.route('/addAdmin').post(addAdmin); 
 // router.route('/update/password').post(isAuthenticated,updatePassword);
 
 router.route('/addPlatform').post(isAuthenticated,addPlatform);

@@ -223,4 +223,4 @@ const getQueries = asyncHandler(async(req,res,next)=>{
 
 
 
-module.exports = {Login,addAdmin,addPlatform, addCourse,deletePlatform,deleteCourse,updateStudent,deleteStudent,getStudentData,getCatalogData};
+module.exports = {login,addAdmin,addPlatform, addCourse,deletePlatform,deleteCourse,updateStudent,deleteStudent,getStudentData,getCatalogData};

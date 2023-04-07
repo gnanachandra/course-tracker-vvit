@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 const studentSchema = new mongoose.Schema(
   {
@@ -60,14 +61,24 @@ const studentSchema = new mongoose.Schema(
       type: String,
       default: "Student",
     },
-  },
-  { timestamps: true }
+  },{
+    toJSON: {
+      virtuals: true,
+    },
+    toObject: {
+      virtuals: true,
+    },
+  }
 );
 
 studentSchema.methods.createJWT = function () {
   return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_LIFETIME,
   });
+};
+
+studentSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
 studentSchema.pre("save", async function (next) {

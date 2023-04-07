@@ -1,6 +1,6 @@
 const Student = require("../models/studentSchema");
 const bcrypt = require("bcrypt");
-const Course = require("../models/Course");
+const Course = require('../models/Course');
 const Query = require("../models/QuerySchema");
 const asyncHandler = require("express-async-handler");
 const { StatusCodes } = require("http-status-codes");
@@ -69,7 +69,7 @@ const addCourseController = asyncHandler(async (req, res) => {
       enrolledIn,
       student: studentId,
     });
-
+    console.log(await student.populate({path:"courses"}))
     if (isEnrolled) {
       return res
         .status(StatusCodes.CONFLICT)
@@ -84,14 +84,10 @@ const addCourseController = asyncHandler(async (req, res) => {
       student: studentId,
     });
     await newCourse.save();
-
-    // Add the course to the student's list of courses and save the changes
-    student.courses.push(newCourse._id);
-    await student.save();
-
+    console.log(await student.populate({path:"courses"}))
     return res.status(StatusCodes.OK).json({
       message: "Course added successfully",
-      data: await student.populate("courses"),
+      data: await student.populate({path:"courses"}),
     });
   } catch (error) {
     console.error(error);
@@ -119,6 +115,10 @@ const submitQuery = asyncHandler(async(req,res,next)=>{
 const updateCourse = asyncHandler(async(req,res,next)=>{
   const courseId = req.params.courseId;
   const updatedData = req.body;
+  if(Object.keys(updatedData).length === 0)
+  {
+    return res.status(StatusCodes.OK).json({message:"No change in details !"});
+  }
   if(!courseId)
   {
     return res.status(StatusCodes.BAD_REQUEST).json({message : "Course Id is missing !"});
@@ -129,14 +129,17 @@ const updateCourse = asyncHandler(async(req,res,next)=>{
     return res.status(StatusCodes.NOT_FOUND).json({message : "Course not found !"});
   }
   try{
-    const response = await Course.findByIdAndUpdate(courseId,updatedData);
-    return res.status(StatusCodes.OK).json({message : "Course details updated !"});
+    const response = await Course.findByIdAndUpdate(courseId,updatedData,{
+      runValidators : true
+    });
+    return res.status(StatusCodes.OK).json({message : "Course details updated !",data : response});
   }
   catch(err)
   {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message,updatedData : response});
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
   }
 });
+
 
 const deleteCourse = asyncHandler(async(req,res,next)=>{
   const courseId = req.params.courseId;
@@ -150,8 +153,8 @@ const deleteCourse = asyncHandler(async(req,res,next)=>{
     return res.status(404).json({message : "Course not found !"});
   }
   try{
-    const response = await Course.findOneAndDelete({courseId});
-    return res.status(StatusCodes.OK).json({message : "Course deleted !"});
+    const response = await Course.findOneAndDelete({_id:courseId});
+    return res.status(StatusCodes.OK).json({message : "Course deleted !",data:response});
   }
   catch(err)
   {
@@ -159,9 +162,10 @@ const deleteCourse = asyncHandler(async(req,res,next)=>{
   }
 });
 
+
 const updateProfile = asyncHandler(async(req,res,next)=>{
   const updatedData = req.body;
-  if(!updatedData)
+  if(Object.keys(updatedData).length === 0)
   {
     return res.status(StatusCodes.OK).json({message : "no change in details !"});
   }
@@ -190,7 +194,7 @@ const updatePassword = asyncHandler(async(req,res,next)=>{
     return res.status(StatusCodes.BAD_REQUEST).json({message: "Please fill all details"});
   }
   const student = await Student.findById(req.userId);
-  const isPasswordMatched = await student.confirmPassword(oldPassword);
+  const isPasswordMatched = await student.comparePassword(oldPassword);
   if (!isPasswordMatched) {
     return res.status(StatusCodes.UNAUTHORIZED).json({ message:"Invalid Credentials !"});
   }
@@ -203,5 +207,22 @@ const updatePassword = asyncHandler(async(req,res,next)=>{
   student.password = newPassword;
   await student.save();
   return res.status(StatusCodes.OK).json({ message: "password updated",updatedData : student});
+});
+
+
+const getmyProfile = asyncHandler(async(req,res,next)=>{
+  const id = req.userId;
+  if(!id)
+  {
+    return res.status(StatusCodes.BAD_REQUEST).json({message : "student id not received !"});
+  }
+  try{
+    const studentData = await Student.findById(id).populate(['courses','queries']);
+    return res.status(StatusCodes.OK).json({message : "Student Data Sent !",data : studentData});
+  }
+  catch(err)
+  {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+  }
 })
-module.exports = {login,handleNewStudent,addCourseController,submitQuery,updateProfile,deleteCourse,updateCourse};
+module.exports = {updatePassword,login,handleNewStudent,addCourseController,submitQuery,updateProfile,deleteCourse,updateCourse,getmyProfile};
