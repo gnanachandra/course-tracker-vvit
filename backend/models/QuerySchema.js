@@ -19,6 +19,10 @@ const QuerySchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    adminMessage : {
+      type : String,
+      default : ""
+    }
   },
   { timestamps: true }
 );

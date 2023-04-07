@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {login,addAdmin,addPlatform, addCourse, deletePlatform, deleteCourse, deleteStudent, updateStudent, getStudentData, getCatalogData} = require('../controllers/adminControllers');
+const {login,addAdmin,updateQuery,deleteQuery,addPlatform, addCourse, deletePlatform, deleteCourse, deleteStudent, getStudentData, getCatalogData, getQueries} = require('../controllers/adminControllers');
 const  isAuthenticated  = require("../middleware/verifyJWT");
 
 
@@ -8,14 +8,17 @@ router.route('/login').post(login);
 router.route('/addAdmin').post(addAdmin); 
 // router.route('/update/password').post(isAuthenticated,updatePassword);
 
-router.route('/addPlatform').post(isAuthenticated,addPlatform);
-router.route('/addCourse').post(isAuthenticated,addCourse);
-router.route('/catalog/platforms/:platformName').delete(isAuthenticated,deletePlatform);
-router.route('/deleteCourse/:platformName&:courseName').delete(isAuthenticated,deleteCourse);
-router.route('/getCatalog').get(getCatalogData);
+router.route('/platform').post(isAuthenticated,addPlatform)
+router.route('/platform/:name').delete(isAuthenticated,deletePlatform)
 
-router.route('/delete/:rollNo').delete(isAuthenticated,deleteStudent);
-router.route('/update/:rollNo').put(isAuthenticated,updateStudent);
-router.route('/student/:rollNo').get(isAuthenticated,getStudentData);
+router.route('/courses').post(isAuthenticated,addCourse);
+router.route('/courses/:platformName/:courseName').delete(isAuthenticated,deleteCourse);
+
+router.route('/getCatalog').get(isAuthenticated,getCatalogData);
+
+router.route('/student/:rollNo').delete(isAuthenticated,deleteStudent).get(isAuthenticated,getStudentData);
+
+router.route('/queries').get(isAuthenticated,getQueries);
+router.route('/queries/:id').patch(isAuthenticated,updateQuery).delete(isAuthenticated,deleteQuery);
 
 module.exports = router;

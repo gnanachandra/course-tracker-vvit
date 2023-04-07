@@ -1,10 +1,10 @@
 const Catalog = require("../models/CourseCatalog");
 const Student = require("../models/studentSchema");
+const Query = require("../models/QuerySchema");
 const bcrypt = require("bcrypt");
 const Admin = require("../models/Admin");
 const asyncHandler = require("express-async-handler");
 const {StatusCodes} = require("http-status-codes");
-const { Query } = require("mongoose");
 
 //admin login
 
@@ -56,8 +56,8 @@ const addPlatform = asyncHandler(async(req,res) =>{
             return res.status(StatusCodes.CONFLICT).json({message : "Platform Already Exists !"});
         }
         else{
-            const newDoc = await Catalog.create({platformName});
-            return res.status(StatusCodes.OK).json({message:"New platform added !"});
+            const response = await Catalog.create({platformName});
+            return res.status(StatusCodes.OK).json({message:"New platform added !",data : response});
         }
     }
     catch(err)
@@ -77,10 +77,10 @@ const addCourse = asyncHandler(async(req,res) => {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: "Platform does not exist. Please add the platform first." });
       }
       const courses = platform.courses;
-      if(courses.includes(courseName.toLowerCase())) {
+      if(courses.includes(courseName)) {
         return res.status(StatusCodes.CONFLICT).json({ message: "Course already exists in the platform." });
       }
-      courses.push(courseName.toLowerCase());
+      courses.push(courseName);
       platform.courses = courses;
       await platform.save();
       return res.status(StatusCodes.OK).json({ message: "Course added successfully!" });
@@ -102,8 +102,8 @@ const deletePlatform = asyncHandler(async(req,res) =>{
         {
             return res.status(StatusCodes.NOT_FOUND).json({message : "Platform Does not exist"});
         }
-        const result = await Catalog.findOneAndDelete({platformName});
-        return res.status(StatusCodes.OK).json({message : "Platform Deleted Successfully !"})
+        const response = await Catalog.findOneAndDelete({platformName});
+        return res.status(StatusCodes.OK).json({message : "Platform Deleted Successfully !",data:response})
     }
     catch(err){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
@@ -114,7 +114,7 @@ const deletePlatform = asyncHandler(async(req,res) =>{
 const deleteCourse = asyncHandler(async(req,res) =>{
     const platformName = req.params.platformName;
     const courseName = req.params.courseName;
-    const platformData = await Platform.findOne({platformName});
+    const platformData = await Catalog.findOne({platformName});
     if(!platformData)
     {
         return res.status(StatusCodes.NOT_FOUND).json({message : "Platform does not exist!"});
@@ -140,7 +140,7 @@ const deleteStudent = asyncHandler(async(req,res) =>{
     if(studentExists){
         try{
             const studentData = await Student.findOneAndDelete({rollNo});
-            return res.status(StatusCodes.OK).json({message : "Student Data deleted !"});
+            return res.status(StatusCodes.OK).json({message : "Student Data deleted !",data : studentData});
         }
         catch(err)
         {
@@ -150,34 +150,6 @@ const deleteStudent = asyncHandler(async(req,res) =>{
     return res.status(StatusCodes.NOT_FOUND).json({message : "Student Not found !"});
 })
 
-const updateStudent = asyncHandler(async(req,res) =>{
-    const rollNo = req.params.rollNo;
-    if(!rollNo)
-    {
-        return res.status(StatusCodes.BAD_REQUEST).json({message : "rollno not received in params !"});
-    }
-    if('password' in req.body)
-    {
-        const hashedPassword = await bcrypt.hash(req.body.password,10);
-        req.body.password = hashedPassword;
-    }
-    const studentData = await Student.findOne({rollNo})
-    if(!studentData)
-    {
-        return res.status(StatusCodes.NOT_FOUND).json({message : "Details Not found !"});
-    }
-    try{
-        for(let key in req.body)
-        {
-            studentData[key] = req.body[key];
-        }
-        await studentData.save();
-        return res.status(StatusCodes.OK).json({message : "Details updated",data : studentData});
-    }
-    catch(err){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
-    }
-})
 
 const getStudentData = asyncHandler(async (req, res) => {
     const rollNo = req.params.rollNo;
@@ -212,7 +184,7 @@ const getCatalogData = asyncHandler(async(req,res) => {
 //get queries
 const getQueries = asyncHandler(async(req,res,next)=>{
     try{
-        const queries = await Query.find({active : true});
+        const queries = await Query.find({active : true,adminMessage : ""});
         return res.status(StatusCodes.OK).json({message : "queries data sent !",data : queries}); 
     }
     catch(err)
@@ -221,6 +193,92 @@ const getQueries = asyncHandler(async(req,res,next)=>{
     }
 });
 
+const updateQuery = asyncHandler(async(req,res,next)=>{
+    const id = req.params.id;
+    const {message} = req.body;
+    if(!message){
+        return res.status(StatusCodes.BAD_REQUEST).json({message : "Message is missing"});
+    }
+    if(!id)
+    {
+        return res.status(StatusCodes.BAD_REQUEST).json({message : "Query id is missing !"});
+    }
+    try{
+        const response = await Query.findByIdAndUpdate(id,{adminMessage :message,active : false});
+        return res.status(StatusCodes.OK).json({message : "Query updated !",data:response});
+    }
+    catch(err)
+    {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+    }
+});
+
+const deleteQuery = asyncHandler(async(req,res,next)=>{
+    const id = req.params.id;
+    if(!id)
+    {
+        return res.status(StatusCodes.BAD_REQUEST).json({message : "ID not received !"});
+    }
+    try{
+        const response = await Query.findByIdAndDelete(id);
+        return res.status(StatusCodes.OK).json({message : "Query deleted !",data : response});
+    }
+    catch(err)
+    {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+    }
+})
 
 
-module.exports = {login,addAdmin,addPlatform, addCourse,deletePlatform,deleteCourse,updateStudent,deleteStudent,getStudentData,getCatalogData};
+
+module.exports = {login,addAdmin,addPlatform,updateQuery,deleteQuery ,addCourse,deletePlatform,deleteCourse,deleteStudent,getStudentData,getCatalogData,getQueries};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const updateStudent = asyncHandler(async(req,res) =>{
+//     const rollNo = req.params.rollNo;
+//     if(!rollNo)
+//     {
+//         return res.status(StatusCodes.BAD_REQUEST).json({message : "rollno not received in params !"});
+//     }
+//     if('password' in req.body)
+//     {
+//         const hashedPassword = await bcrypt.hash(req.body.password,10);
+//         req.body.password = hashedPassword;
+//     }
+//     const studentData = await Student.findOne({rollNo})
+//     if(!studentData)
+//     {
+//         return res.status(StatusCodes.NOT_FOUND).json({message : "Details Not found !"});
+//     }
+//     try{
+//         for(let key in req.body)
+//         {
+//             studentData[key] = req.body[key];
+//         }
+//         await studentData.save();
+//         return res.status(StatusCodes.OK).json({message : "Details updated",data : studentData});
+//     }
+//     catch(err){
+//         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+//     }
+// })
