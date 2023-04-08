@@ -1,6 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { handleNewStudent,addCourseController,submitQuery, login, getmyProfile, updatePassword, updateProfile, updateCourse, deleteCourse} = require("../controllers/studentControllers");
+const { handleNewStudent,
+    addCourseController,
+    submitQuery,
+    login,
+    getmyProfile,
+    updateProfile,
+    updatePassword,
+    updateCourse,
+    deleteCourse
+} = require("../controllers/studentControllers");
 const isAuthenticated = require("../middleware/verifyJWT");
 
 router.route('/login').post(login);

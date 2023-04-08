@@ -1,6 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const {login,addAdmin,updateQuery,deleteQuery,addPlatform, addCourse, deletePlatform, deleteCourse, deleteStudent, getStudentData, getCatalogData, getQueries} = require('../controllers/adminControllers');
+const {
+    addAdmin,
+    addPlatform,
+    addCourse,
+    login,
+    getStudentData,
+    getCatalogData,
+    getQueries,
+    updateQuery,
+    deleteQuery ,
+    deletePlatform,
+    deleteCourse,
+    deleteStudent,} = require('../controllers/adminControllers');
+    
 const  isAuthenticated  = require("../middleware/verifyJWT");
 
 

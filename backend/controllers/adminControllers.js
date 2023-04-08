@@ -1,31 +1,21 @@
 const Catalog = require("../models/CourseCatalog");
-const Student = require("../models/studentSchema");
+const Student = require("../models/StudentSchema");
 const Query = require("../models/QuerySchema");
-const bcrypt = require("bcrypt");
 const Admin = require("../models/Admin");
 const asyncHandler = require("express-async-handler");
 const {StatusCodes} = require("http-status-codes");
 
-//admin login
+ 
+/*
 
-const login = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Please provide email and password" });
-    }
-    const admin = await Admin.findOne({ email });
-    if (!admin) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid credentials" });
-    }
-    const isPasswordMatch = await admin.comparePassword(password);
-    if (!isPasswordMatch) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid credentials" });
-    }
-    const token = admin.createJWT();
-    const adminData = await Admin.findById(admin._id).select("-password");
-    res.status(StatusCodes.OK).json({ adminData, token });
-});
+CREATE - add admin, add platform , add course
+READ - login, get catalog, get queries,get student data
+UPDATE - update query
+DELETE - delete student, delete platform, delete course,delete query
 
+*/
+
+//create operations
 
 //add admin
 const addAdmin = asyncHandler(async(req, res, next) => {
@@ -42,8 +32,7 @@ const addAdmin = asyncHandler(async(req, res, next) => {
     return res.status(StatusCodes.CREATED).json({message: "Admin Added" });
 });
 
-
-  
+//add platform
 const addPlatform = asyncHandler(async(req,res) =>{
     const {platformName} = req.body;
     if(!platformName){
@@ -66,6 +55,7 @@ const addPlatform = asyncHandler(async(req,res) =>{
     }
 });
 
+//add course
 const addCourse = asyncHandler(async(req,res) => {
     const { platformName, courseName } = req.body;
     if(!platformName || !courseName) {
@@ -88,69 +78,30 @@ const addCourse = asyncHandler(async(req,res) => {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
     }
 });
-  
 
-const deletePlatform = asyncHandler(async(req,res) =>{
-    const platformName = req.params.name;
-    if(!platformName)
-    {
-        return res.status(StatusCodes.BAD_REQUEST).json({message : "Fill all the details !"});
+
+//READ
+
+//admin login
+const login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Please provide email and password" });
     }
-    try{
-        const isPlatformExists = await Catalog.findOne({platformName});
-        if(!isPlatformExists)
-        {
-            return res.status(StatusCodes.NOT_FOUND).json({message : "Platform Does not exist"});
-        }
-        const response = await Catalog.findOneAndDelete({platformName});
-        return res.status(StatusCodes.OK).json({message : "Platform Deleted Successfully !",data:response})
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid credentials" });
     }
-    catch(err){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+    const isPasswordMatch = await admin.comparePassword(password);
+    if (!isPasswordMatch) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid credentials" });
     }
+    const token = admin.createJWT();
+    const adminData = await Admin.findById(admin._id).select("-password");
+    res.status(StatusCodes.OK).json({ adminData, token });
 });
 
-
-const deleteCourse = asyncHandler(async(req,res) =>{
-    const platformName = req.params.platformName;
-    const courseName = req.params.courseName;
-    const platformData = await Catalog.findOne({platformName});
-    if(!platformData)
-    {
-        return res.status(StatusCodes.NOT_FOUND).json({message : "Platform does not exist!"});
-    }
-    const courses = platformData.courses;
-    const courseExists = courses.includes(courseName);
-    if(!courseExists)
-    {
-        return res.status(StatusCodes.NOT_FOUND).json({message : "Course does not exist!"});
-    }
-    const newCourses = courses.filter((course)=>{
-        return course !== courseName;
-    });
-    platformData.courses = newCourses;
-    await platformData.save();
-    return res.status(StatusCodes.OK).json({message : "Course deleted successfully!"});
-})
-
-
-const deleteStudent = asyncHandler(async(req,res) =>{
-    const rollNo = req.params.rollNo;
-    const studentExists = await Student.findOne({rollNo});
-    if(studentExists){
-        try{
-            const studentData = await Student.findOneAndDelete({rollNo});
-            return res.status(StatusCodes.OK).json({message : "Student Data deleted !",data : studentData});
-        }
-        catch(err)
-        {
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
-        }
-    }
-    return res.status(StatusCodes.NOT_FOUND).json({message : "Student Not found !"});
-})
-
-
+//get student data
 const getStudentData = asyncHandler(async (req, res) => {
     const rollNo = req.params.rollNo;
     if (!rollNo) {
@@ -166,8 +117,6 @@ const getStudentData = asyncHandler(async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
     }
 })
-
-
 
 //get catalog
 const getCatalogData = asyncHandler(async(req,res) => {
@@ -193,6 +142,7 @@ const getQueries = asyncHandler(async(req,res,next)=>{
     }
 });
 
+//UPDATE
 const updateQuery = asyncHandler(async(req,res,next)=>{
     const id = req.params.id;
     const {message} = req.body;
@@ -213,6 +163,70 @@ const updateQuery = asyncHandler(async(req,res,next)=>{
     }
 });
 
+//DELETE
+
+//delete platform
+const deletePlatform = asyncHandler(async(req,res) =>{
+    const platformName = req.params.name;
+    if(!platformName)
+    {
+        return res.status(StatusCodes.BAD_REQUEST).json({message : "Fill all the details !"});
+    }
+    try{
+        const isPlatformExists = await Catalog.findOne({platformName});
+        if(!isPlatformExists)
+        {
+            return res.status(StatusCodes.NOT_FOUND).json({message : "Platform Does not exist"});
+        }
+        const response = await Catalog.findOneAndDelete({platformName});
+        return res.status(StatusCodes.OK).json({message : "Platform Deleted Successfully !",data:response})
+    }
+    catch(err){
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+    }
+});
+
+//delete course
+const deleteCourse = asyncHandler(async(req,res) =>{
+    const platformName = req.params.platformName;
+    const courseName = req.params.courseName;
+    const platformData = await Catalog.findOne({platformName});
+    if(!platformData)
+    {
+        return res.status(StatusCodes.NOT_FOUND).json({message : "Platform does not exist!"});
+    }
+    const courses = platformData.courses;
+    const courseExists = courses.includes(courseName);
+    if(!courseExists)
+    {
+        return res.status(StatusCodes.NOT_FOUND).json({message : "Course does not exist!"});
+    }
+    const newCourses = courses.filter((course)=>{
+        return course !== courseName;
+    });
+    platformData.courses = newCourses;
+    await platformData.save();
+    return res.status(StatusCodes.OK).json({message : "Course deleted successfully!"});
+})
+
+//delete student
+const deleteStudent = asyncHandler(async(req,res) =>{
+    const rollNo = req.params.rollNo;
+    const studentExists = await Student.findOne({rollNo});
+    if(studentExists){
+        try{
+            const studentData = await Student.findOneAndDelete({rollNo});
+            return res.status(StatusCodes.OK).json({message : "Student Data deleted !",data : studentData});
+        }
+        catch(err)
+        {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+        }
+    }
+    return res.status(StatusCodes.NOT_FOUND).json({message : "Student Not found !"});
+})
+
+//delete query
 const deleteQuery = asyncHandler(async(req,res,next)=>{
     const id = req.params.id;
     if(!id)
@@ -230,8 +244,20 @@ const deleteQuery = asyncHandler(async(req,res,next)=>{
 })
 
 
-
-module.exports = {login,addAdmin,addPlatform,updateQuery,deleteQuery ,addCourse,deletePlatform,deleteCourse,deleteStudent,getStudentData,getCatalogData,getQueries};
+module.exports = {
+    addAdmin,
+    addPlatform,
+    addCourse,
+    login,
+    getStudentData,
+    getCatalogData,
+    getQueries,
+    updateQuery,
+    deleteQuery ,
+    deletePlatform,
+    deleteCourse,
+    deleteStudent,
+};
 
 
 
