@@ -8,6 +8,8 @@ const {
     getStudentData,
     getCatalogData,
     getQueries,
+    getAllStudents,
+    getStudentsByCourse,
     updateQuery,
     deleteQuery ,
     deletePlatform,
@@ -33,5 +35,6 @@ router.route('/student/:rollNo').delete(isAuthenticated,deleteStudent).get(isAut
 
 router.route('/queries').get(isAuthenticated,getQueries);
 router.route('/queries/:id').patch(isAuthenticated,updateQuery).delete(isAuthenticated,deleteQuery);
-
+router.route('/students').get(isAuthenticated,getAllStudents);
+router.route('/students/:courseName').get(isAuthenticated,getStudentsByCourse);
 module.exports = router;

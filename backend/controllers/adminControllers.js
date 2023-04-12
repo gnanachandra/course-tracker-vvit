@@ -2,6 +2,7 @@ const Catalog = require("../models/CourseCatalog");
 const Student = require("../models/StudentSchema");
 const Query = require("../models/QuerySchema");
 const Admin = require("../models/Admin");
+const Course = require("../models/Course");
 const asyncHandler = require("express-async-handler");
 const {StatusCodes} = require("http-status-codes");
 
@@ -142,6 +143,56 @@ const getQueries = asyncHandler(async(req,res,next)=>{
     }
 });
 
+//get all students
+const getAllStudents = asyncHandler(async(req,res,next)=>{
+    try{
+        const students = await Student.find().populate({path:"courses",select:['courseName']});
+        return res.status(StatusCodes.OK).json({message : "All students data sent !",data : students});
+    }
+    catch(err)
+    {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+    }
+})
+
+//get students by course
+const getStudentsByCourse = asyncHandler(async (req, res, next) => {
+    const courseName = req.params.courseName;
+    if (!courseName) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Course Name not received!" });
+    }
+    try {
+      const data = await Course.find({ courseName }).populate("student");
+  
+      const studentIds = new Set();
+      const requiredData = [];
+  
+      data.forEach((course) => {
+        if (!studentIds.has(course.student._id)) {
+          studentIds.add(course.student._id);
+          requiredData.push({
+            name: course.student.name,
+            year: course.student.year,
+            branch: course.student.branch,
+            section: course.student.section,
+            rollNo : course.student.rollNo
+          });
+        }
+      });
+  
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: "Students data sent", data: requiredData });
+    } catch (err) {
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: err.message });
+    }
+  });
+  
+
 //UPDATE
 const updateQuery = asyncHandler(async(req,res,next)=>{
     const id = req.params.id;
@@ -252,6 +303,8 @@ module.exports = {
     getStudentData,
     getCatalogData,
     getQueries,
+    getAllStudents,
+    getStudentsByCourse,
     updateQuery,
     deleteQuery ,
     deletePlatform,
