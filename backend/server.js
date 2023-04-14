@@ -5,7 +5,7 @@ const cors = require("cors");
 const connectDB = require('./config/connectDB');
 const adminRouter = require('./routes/adminRoutes');
 const studentRouter = require('./routes/studentRoutes');
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
 
 const app = express();
