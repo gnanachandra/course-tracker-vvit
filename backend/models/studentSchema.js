@@ -12,13 +12,13 @@ const studentSchema = new mongoose.Schema(
     rollNo: {
       type: String,
       required: [true, "Please provide roll number"],
-      unique: true,
+      unique:[true,"Duplicate rollno entry"],
       index: true,
     },
     email: {
       type: String,
       required: [true, "Please provide email"],
-      unique: true,
+      unique: [true,"Duplicate email entry"],
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid email"],
       index: true,

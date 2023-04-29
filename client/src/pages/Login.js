@@ -1,13 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {useDispatch, useSelector} from "react-redux";
+import { studentLogin } from "../features/student/studentSlice";
+import {useNavigate} from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import { successToast } from "../utils/toastHelper";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const user = useSelector((store)=>store["student"].user);
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(email + " " + password);
+    dispatch(studentLogin({email,password}))
+    
   };
+
+  useEffect(() => { 
+    if (user) {
+      successToast("Login Successful !")
+      setTimeout(() => {
+        navigate("/profile");
+      }, 1000);
+    }
+  }, [user,navigate]);
+  
   return (
     <div className="bg-gray-50 container flex flex-col justify-center items-center min-w-full min-h-screen">
       {/* image div */}
@@ -26,7 +44,7 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:border-cyan-400"
           />
-          <label for="password" className="font-bold font">
+          <label htmlFor="password" className="font-bold font">
             Password
           </label>
           <input
@@ -45,6 +63,7 @@ const Login = () => {
           />
         </form>
       </div>
+      <ToastContainer/>
     </div>
   );
 };

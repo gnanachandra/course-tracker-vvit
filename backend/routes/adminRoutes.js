@@ -29,7 +29,7 @@ router.route('/platform/:name').delete(isAuthenticated,deletePlatform)
 router.route('/courses').post(isAuthenticated,addCourse);
 router.route('/courses/:platformName/:courseName').delete(isAuthenticated,deleteCourse);
 
-router.route('/getCatalog').get(isAuthenticated,getCatalogData);
+router.route('/getCatalog').get(getCatalogData);
 
 router.route('/student/:rollNo').delete(isAuthenticated,deleteStudent).get(isAuthenticated,getStudentData);
 

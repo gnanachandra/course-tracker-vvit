@@ -1,13 +1,20 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { successToast,errorToast } from '../utils/toastHelper';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { studentRegisteration } from '../features/student/studentSlice';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 const branches = ['CSE','IT','ECE','EEE','CSM','AID','IOT','CIC','MECH','CIVIL']
 const sections = ['A','B','C','D']
 const years = ['I','II','III','IV']
 
 const Register = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // const user = useSelector((store)=>store["student"].user);
+  const message = useSelector((store)=>store["student"].message);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -21,6 +28,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleFormChange = (e) => {
+    console.log(e.target.name + "  " + e.target.value);
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -31,11 +39,29 @@ const Register = () => {
       errorToast("Passwords does not match")
     }
     else{
-      successToast("Registeration Successfull !");
-
+      dispatch(studentRegisteration(form))
     }
     console.log(form);
   }
+
+  useEffect(() => {
+    if(message === "Student Enrolled !")
+    {
+      successToast("Registeration Successful");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+      
+    }
+    else if(message !== "processing" && message !== ""){
+      errorToast(message);
+    }
+  }, [message,navigate])
+  
+  
+
+ 
+  
   return (
     <div className='flex items-center justify-center flex-col container gap-y-5'>
       <div>
@@ -61,7 +87,8 @@ const Register = () => {
 
           <div className='flex  justify-center gap-y-2 flex-col'>  
             <label className='font-semibold' htmlFor='year'>Year</label>
-            <select className='p-3 rounded-md shadow-md' name='year' onChange={handleFormChange}>
+            <select className='p-3 rounded-md shadow-md' name='year' onChange={handleFormChange} defaultValue={"Select Year"}>
+              <option value="Select Year" key={"-1"}  disabled>Select Year</option>
               {
                 years.map((year,index)=>{
                   return <option value={year} key={index}>{year}</option>
@@ -72,7 +99,8 @@ const Register = () => {
 
           <div className='flex  justify-center gap-y-2 flex-col'>  
             <label className='font-semibold' htmlFor='branch'>Branch</label>
-            <select className='p-3 rounded-md shadow-md' name='branch' onChange={handleFormChange}>
+            <select className='p-3 rounded-md shadow-md' name='branch' onChange={handleFormChange} defaultValue={"Select Branch"}>
+            <option value="Select Branch" key={"-1"}  disabled>Select Branch</option>
               {
                 branches.map((branch,index)=>{
                   return <option value={branch} key={index}>{branch}</option>
@@ -83,7 +111,8 @@ const Register = () => {
 
           <div className='flex  justify-center gap-y-2 flex-col'>  
             <label className='font-semibold' htmlFor='section'>Section</label>
-            <select className='p-3 rounded-md shadow-md' name='section' onChange={handleFormChange}>
+            <select className='p-3 rounded-md shadow-md' name='section' onChange={handleFormChange} defaultValue={"Select Section"}>
+            <option value="Select Section" key={"-1"}  disabled>Select Section</option>
               {
                 sections.map((section,index)=>{
                   return <option value={section} key={index}>{section}</option>

@@ -50,8 +50,10 @@ const handleNewStudent = asyncHandler(async (req, res) => {
   }
   try {
     const newStudent = await Student.create(req.body);
-    return res.status(StatusCodes.OK).json({ message: "Student Enrolled !" });
+    const token = await newStudent.createJWT();
+    return res.status(StatusCodes.OK).json({ message: "Student Enrolled !" ,user : newStudent, token : token});
   } catch (err) {
+    console.log(err);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: err.message });
@@ -141,6 +143,7 @@ const submitQuery = asyncHandler(async (req, res, next) => {
 
 //login
 const login = asyncHandler(async (req, res) => {
+  console.log(req.body);
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -148,18 +151,22 @@ const login = asyncHandler(async (req, res) => {
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Enter all details!" });
     }
-    const studentData = await Student.findOne({ email });
+    const studentData = await Student.findOne({ email }).populate([
+      "courses queries",
+    ]);
+    console.log(studentData);
     if (!studentData) {
       return res
-        .status(StatusCodes.NOT_FOUND)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Student not registered!" });
     }
+
     const passwordValid = await bcrypt.compare(password, studentData.password);
     if (passwordValid) {
       const token = studentData.createJWT();
       return res
         .status(StatusCodes.OK)
-        .json({ message: "Login successful!", token });
+        .json({ message: "Login successful!", token, data: studentData });
     }
     return res.status(401).json({ message: "Invalid credentials!" });
   } catch (error) {
