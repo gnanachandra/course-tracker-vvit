@@ -16,7 +16,7 @@ export const studentLogin = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     console.log(payload);
     try {
-      const response = await axios.post('https://course-tracker-vvit.vercel.app/login', payload,{
+      const response = await axios.post('https://course-tracker-vvit.vercel.app/api/student/login', payload,{
         headers: {
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -36,7 +36,7 @@ export const studentLogin = createAsyncThunk(
 export const studentRegisteration = createAsyncThunk("/api/student/register",async(payload,{rejectWithValue})=>{
   console.log("Payload for registeration : ",payload);
   try{
-    const response = await axios.post('https://course-tracker-vvit.vercel.app/register',payload,{
+    const response = await axios.post('https://course-tracker-vvit.vercel.app/api/student/register',payload,{
       headers : {
         "Content-Type": "application/json; charset=UTF-8",
       },
