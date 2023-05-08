@@ -4,7 +4,7 @@ const Course = require("../models/Course");
 const Query = require("../models/QuerySchema");
 const asyncHandler = require("express-async-handler");
 const { StatusCodes } = require("http-status-codes");
-
+const Catalog = require("../models/CourseCatalog");
 /*
 
 CREATE - handlenewstudent, add course handler, submit query
@@ -199,6 +199,17 @@ const getmyProfile = asyncHandler(async (req, res, next) => {
   }
 });
 
+const getCatalogData = asyncHandler(async(req,res) => {
+  try{
+      const data = await Catalog.find({}).select(["platformName",'courses']);
+      return res.status(200).json({message : "catalog sent",data});
+  }
+  catch(err)
+  {
+      return res.status(500).json({message : err.message});
+  }
+});
+
 //UPDATE
 
 //update course
@@ -329,6 +340,7 @@ module.exports = {
   submitQuery,
   login,
   getmyProfile,
+  getCatalogData,
   updateProfile,
   updatePassword,
   updateCourse,

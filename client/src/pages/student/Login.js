@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from "react";
 import {useDispatch, useSelector} from "react-redux";
-import { studentLogin } from "../features/student/studentSlice";
+import { studentLogin } from "../../features/student/studentSlice";
 import {useNavigate} from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { successToast } from "../utils/toastHelper";
+import BackDrop from "../../utils/BackDrop";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const {isLoading} = useSelector((store)=>store["student"]);
   const user = useSelector((store)=>store["student"].user);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(studentLogin({email,password}))
+    
+      dispatch(studentLogin({email,password}));
+    // else if(userType === "admin")
+    //   dispatch(adminLogin(email,password));
     
   };
 
   useEffect(() => { 
     if (user) {
-      successToast("Login Successful !")
       setTimeout(() => {
         navigate("/profile");
       }, 1000);
@@ -63,7 +67,9 @@ const Login = () => {
           />
         </form>
       </div>
+      <BackDrop open={isLoading}></BackDrop>
       <ToastContainer/>
+      
     </div>
   );
 };

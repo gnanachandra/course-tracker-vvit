@@ -8,7 +8,8 @@ const { handleNewStudent,
     updateProfile,
     updatePassword,
     updateCourse,
-    deleteCourse
+    deleteCourse,
+    getCatalogData
 } = require("../controllers/studentControllers");
 const isAuthenticated = require("../middleware/verifyJWT");
 
@@ -17,6 +18,7 @@ router.route('/register').post(handleNewStudent);
 router.route('/course').post(isAuthenticated,addCourseController);
 router.route('/course/:courseId').patch(isAuthenticated,updateCourse).delete(isAuthenticated,deleteCourse);
 router.route('/profile').get(isAuthenticated,getmyProfile).post(isAuthenticated,updateProfile)
+router.route('/catalog').get(getCatalogData);
 router.route('/profile/password').post(isAuthenticated,updatePassword)
 router.route('/query').post(isAuthenticated,submitQuery)
 module.exports = router;

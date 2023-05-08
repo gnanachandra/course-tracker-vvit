@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { errorToast, successToast } from "../../utils/toastHelper";
+
 
 const user = localStorage.getItem("user");
 const token = localStorage.getItem("token");
@@ -9,14 +11,13 @@ const initialState = {
   isLoading: false,
   courses: [],
   message: "",
+  catalog : []
 };
 
-export const studentLogin = createAsyncThunk(
-  "/api/student/login",
-  async (payload, { rejectWithValue }) => {
+export const studentLogin = createAsyncThunk("/api/student/login",async (payload, { rejectWithValue }) => {
     console.log(payload);
     try {
-      const response = await axios.post('https://course-tracker-vvit.vercel.app/api/student/login', payload,{
+      const response = await axios.post('http://localhost:5000/api/student/login', payload,{
         headers: {
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -36,7 +37,7 @@ export const studentLogin = createAsyncThunk(
 export const studentRegisteration = createAsyncThunk("/api/student/register",async(payload,{rejectWithValue})=>{
   console.log("Payload for registeration : ",payload);
   try{
-    const response = await axios.post('https://course-tracker-vvit.vercel.app/api/student/register',payload,{
+    const response = await axios.post('http://localhost:5000/api/student/register',payload,{
       headers : {
         "Content-Type": "application/json; charset=UTF-8",
       },
@@ -54,11 +55,32 @@ export const studentRegisteration = createAsyncThunk("/api/student/register",asy
   }
 })
 
+export const getCatalogData = createAsyncThunk("api/student/catalog",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.get("http://localhost:5000/api/student/catalog",{
+      headers : {
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    })
+   return response.data;  
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
 const studentSlice = createSlice({
   name: "student",
   initialState,
   reducers: {},
+
   extraReducers: (builder) => {
+
+    
     builder.addCase(studentLogin.pending, (state) => {
       state.isLoading = true;
       state.message = "processing";
@@ -71,13 +93,16 @@ const studentSlice = createSlice({
       state.token = token;
       state.user = data;
       state.message = message;
-      console.log(state.message);
+      successToast("Login Successful !");
     });
     builder.addCase(studentLogin.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.message = payload.message;
       console.log(state.message);
+      errorToast("Invalid Credentials !");
     });
+
+
 
     builder.addCase(studentRegisteration.pending,(state)=>{
       state.isLoading = true;
@@ -86,14 +111,33 @@ const studentSlice = createSlice({
     builder.addCase(studentRegisteration.fulfilled,(state,{payload})=>{
       state.isLoading = false;
       state.message = payload.message;
-      // localStorage.setItem("user",JSON.stringify(payload.user));
-      // localStorage.setItem("token",token);
-    })
+      localStorage.setItem("user",JSON.stringify(payload.user));
+      localStorage.setItem("token",payload.token);
+      successToast("Registeration Successful !");
+    });
     builder.addCase(studentRegisteration.rejected,(state,{payload})=>{
       console.log("Student registeration rejected payload : ",payload);
       state.isLoading = false;
       state.message = payload.message;
+      errorToast("Check details !");
+    });
+
+
+    builder.addCase(getCatalogData.pending,(state)=>{
+      state.isLoading = true;
+      state.message = "processing"
+    });
+
+    builder.addCase(getCatalogData.fulfilled,(state,{payload})=>{
+      state.catalog = payload.data;
+      state.isLoading = false;
     })
+
+    builder.addCase(getCatalogData.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      errorToast("something went wrong")
+    })
+
   },
 });
 export default studentSlice.reducer;
