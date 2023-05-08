@@ -63,7 +63,9 @@ const handleNewStudent = asyncHandler(async (req, res) => {
 //add course
 const addCourseController = asyncHandler(async (req, res) => {
   const studentId = req.userId;
-  const { platformName, courseName, enrolledIn } = req.body;
+  const platformName = req.body.platform;
+  const courseName = req.body.course;
+  const enrolledIn = req.body.semester;
 
   try {
     // Check if all fields are present in request body
@@ -103,7 +105,7 @@ const addCourseController = asyncHandler(async (req, res) => {
     });
     await newCourse.save();
     return res.status(StatusCodes.OK).json({
-      message: "Course added successfully",
+      message: "Course saved successfully",
       data: await student.populate({ path: "courses" }),
     });
   } catch (error) {

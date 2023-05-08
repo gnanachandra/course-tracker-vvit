@@ -11,7 +11,8 @@ const initialState = {
   isLoading: false,
   courses: [],
   message: "",
-  catalog : []
+  catalog : [],
+  showCourseBackDrop : false
 };
 
 export const studentLogin = createAsyncThunk("/api/student/login",async (payload, { rejectWithValue }) => {
@@ -73,6 +74,48 @@ export const getCatalogData = createAsyncThunk("api/student/catalog",async(paylo
     return rejectWithValue(error?.response?.data);
   }
 })
+
+export const registerCourse = createAsyncThunk("api/student/course",async(payload,{rejectWithValue})=>{
+  console.log("register Course : ",payload);
+  try{
+    const response = await axios.post("http://localhost:5000/api/student/course",payload,{
+      headers:{
+        Authorization : `Bearer ${token}`
+      }
+    });
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+});
+
+export const deleteCourse = createAsyncThunk("api/student/course/:id",async(payload,{rejectWithValue})=>{
+  console.log("Delete course Payload : ",payload);
+  try{
+    const response = await axios.delete(`http://localhost:5000/api/student/course/${payload.id}`,{
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    });
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+});
+
+
 const studentSlice = createSlice({
   name: "student",
   initialState,
@@ -138,6 +181,37 @@ const studentSlice = createSlice({
       errorToast("something went wrong")
     })
 
+
+    builder.addCase(registerCourse.pending,(state)=>{
+      state.isLoading = true;
+    });
+
+    builder.addCase(registerCourse.fulfilled,(state,{payload})=>{
+      state.isLoading = false;
+      localStorage.setItem("user",JSON.stringify(payload.data));
+      successToast(payload.message);
+    });
+
+    builder.addCase(registerCourse.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      errorToast(payload.message);
+    });
+
+
+    builder.addCase(deleteCourse.pending,(state)=>{
+      state.isLoading = true;
+    })
+
+    builder.addCase(deleteCourse.fulfilled,(state,{payload})=>{
+      state.isLoading = false;
+      successToast("Course Deleted !");
+    });
+
+    builder.addCase(deleteCourse.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      errorToast("Something went wrong !");
+    })
   },
 });
+
 export default studentSlice.reducer;

@@ -1,8 +1,10 @@
 import React,{useState} from 'react'
 import {useSelector} from "react-redux"
+import CourseBackDrop from '../../utils/CourseBackDrop';
 const Profile = () => {
   const user = useSelector((store)=>store["student"].user);
   const [edit,setEdit] = useState(false);
+  const [open,setAddCourse] = useState(false);
   return (
     // Overall div
     <div className='grid sm:grid-cols-1 md:grid-cols-2 min-h-screen pt-20 gap-y-10'>
@@ -36,8 +38,9 @@ const Profile = () => {
           <label htmlFor='email'  className='font-bold'>Email : </label>
           <p>{user.email}</p>
         </div>
-        <input type="button" name="addCourse" value="AddCourse"/>
+        <input type="button" name="addCourse" value="AddCourse" onClick={()=>setAddCourse(true)}/>
       </div>
+      <CourseBackDrop open={open}/>
     </div>
   )
 }

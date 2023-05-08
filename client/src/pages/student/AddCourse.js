@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCatalogData } from "../../features/student/studentSlice";
+import { getCatalogData, registerCourse } from "../../features/student/studentSlice";
 import BackDrop from "../../utils/BackDrop";
 import { ToastContainer } from "react-toastify";
 const AddCourse = () => {
   const sems = ["1-1", "1-2", "2-1", "2-2", "3-1", "3-2", "4-1", "4-2"];
+  const {isLoading} = useSelector((store)=>store["student"])
   const { catalog } = useSelector((store) => store["student"]);
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getCatalogData());
-  }, []);
+  const [courses, setCourses] = useState([]);
   const [form, setForm] = useState({
     platform: "",
     course: "",
     semester: "",
   });
-  const [platform, setPlatform] = useState("");
-  const [courses, setCourses] = useState([]);
+  
+  useEffect(() => {
+    dispatch(getCatalogData());
+  },[]);
+  
   const handlePlatformChange = (e) => {
     const platformName = e.target.value;
     const platform = catalog.find((item) => item.platformName === platformName);
     if (platform) {
-      setPlatform(platformName);
       setCourses(platform.courses);
     }
   };
@@ -32,29 +33,30 @@ const AddCourse = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form);
+    dispatch(registerCourse(form));
   };
 
   return (
-    <div className="flex items-center justify-center flex-col container gap-y-5">
-      <div className="w-1/3">
+    <div className="flex items-center justify-center flex-col gap-y-5 bg-gray-100  p-10">
+      <div className="w-auto">
         <form className="grid sm:grid-cols-1 gap-x-10 gap-y-4">
+          <h2 className="font-bold text-black text-xl text-center">Add Course</h2>
           <div className="flex  justify-center gap-y-2 flex-col">
-            <label className="font-semibold" htmlFor="platform">platform</label>
+            <label className="font-semibold text-black" htmlFor="platform">Platform</label>
             <select
-              className="p-3 rounded-md shadow-md"
+              className="p-3 rounded-md shadow-md  text-black"
               name="platform"
               onChange={(e) => {
                 handleFormChange(e);
                 handlePlatformChange(e);
               }}
               defaultValue={"Select Platform"}>
-              <option value="Select Platform" key={"-1"} disabled>
+              <option value="Select Platform" key={"-1"} disabled className="text-black">
                 Select Platform
               </option>
               {catalog.map((item, index) => {
                 return (
-                  <option value={item.platformName} key={index}>
+                  <option value={item.platformName} key={index} className="text-black">
                     {item.platformName}
                   </option>
                 );
@@ -63,11 +65,11 @@ const AddCourse = () => {
           </div>
 
           <div className="flex  justify-center gap-y-2 flex-col">
-            <label className="font-semibold" htmlFor="courseName">
+            <label className="font-semibold text-black" htmlFor="courseName">
               Courses
             </label>
             <select
-              className="p-3 rounded-md shadow-md"
+              className="p-3 rounded-md shadow-md text-black"
               name="course"
               onChange={handleFormChange}
               defaultValue={"Select Course"}>
@@ -76,7 +78,7 @@ const AddCourse = () => {
               </option>
               {courses.map((courseName, index) => {
                 return (
-                  <option value={courseName} key={index}>
+                  <option value={courseName} key={index} className="text-black">
                     {courseName}
                   </option>
                 );
@@ -85,15 +87,15 @@ const AddCourse = () => {
           </div>
 
           <div className="flex  justify-center gap-y-2 flex-col">
-            <label className="font-semibold" htmlFor="enrolledIn">
+            <label className="font-semibold text-black" htmlFor="enrolledIn">
               Enrolled In
             </label>
             <select
-              className="p-3 rounded-md shadow-md"
+              className="p-3 rounded-md shadow-md text-black"
               name="semester"
               onChange={handleFormChange}
               defaultValue={"Select Semester"}>
-              <option value="Select Semester" key={"-1"} disabled>
+              <option value="Select Semester" key={"-1"} disabled className="text-black">
                 Select Semester
               </option>
               {sems.map((semester, index) => {
@@ -111,19 +113,19 @@ const AddCourse = () => {
                 name="cancel"
                 value="Cancel"
                 onClick={handleSubmit}
-                className="bg-red-500 text-white text-md font-bold w-1/2 p-3 rounded-md mt-3 hover:bg-red-700 cursor-pointer"
+                className="bg-red-500 text-white text-md font-bold w-24 p-3 rounded-md mt-3 hover:bg-red-700 cursor-pointer"
                 />
             <input
                 type="submit"
                 name="submit"
                 value="Save"
                 onClick={handleSubmit}
-                className="bg-blue-600 text-white text-md font-bold w-1/2 p-3 rounded-md mt-3 hover:bg-blue-700 cursor-pointer"
+                className="bg-blue-600 text-white text-md font-bold w-24 p-3 rounded-md mt-3 hover:bg-blue-700 cursor-pointer"
                 />
           </div>
         </form>
-        
       </div>
+      <BackDrop open={isLoading}></BackDrop>
       <ToastContainer />
     </div>
   );
