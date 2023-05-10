@@ -201,16 +201,33 @@ const getmyProfile = asyncHandler(async (req, res, next) => {
   }
 });
 
+//get catalog data
 const getCatalogData = asyncHandler(async(req,res) => {
   try{
       const data = await Catalog.find({}).select(["platformName",'courses']);
-      return res.status(200).json({message : "catalog sent",data});
+      return res.status(StatusCodes.OK).json({message : "catalog sent",data});
   }
   catch(err)
   {
-      return res.status(500).json({message : err.message});
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
   }
 });
+
+//get enrolled courses
+const getEnrolledCourses = asyncHandler(async(req,res)=>{
+  if(!req.userId)
+  {
+    return res.status(StatusCodes.BAD_REQUEST).json({message : "Something went wrong"});
+  }
+  try{
+    const data = await Course.find({student:req.userId});
+    return res.status(StatusCodes.OK).json({message : "Enrolled Courses sent",data});
+  }
+  catch(err)
+  {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:err.message});
+  }
+})
 
 //UPDATE
 
@@ -343,6 +360,7 @@ module.exports = {
   login,
   getmyProfile,
   getCatalogData,
+  getEnrolledCourses, 
   updateProfile,
   updatePassword,
   updateCourse,

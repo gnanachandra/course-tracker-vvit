@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { errorToast, successToast } from "../../utils/toastHelper";
+import { errorToast, successToast, warningToast } from "../../utils/toastHelper";
 
 
 const user = localStorage.getItem("user");
@@ -115,6 +115,44 @@ export const deleteCourse = createAsyncThunk("api/student/course/:id",async(payl
   }
 });
 
+export const getEnrolledCourses = createAsyncThunk("api/student/course",async(payload,{rejectWithValue})=>{
+  console.log("Get enrolled Courses payload : ",payload)
+  try{
+    const response = await axios.get("http://localhost:5000/api/student/course",{
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    });
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response){
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+export const uploadToCloud = createAsyncThunk("/upload",async(file,{rejectWithValue})=>{
+  const formData = new FormData();
+  formData.append("photos", file);
+  try{
+    const response = await axios.post("http://localhost:5000/upload", formData,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  }
+  catch(error)
+  {
+    if (!error?.response) {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
 
 const studentSlice = createSlice({
   name: "student",
@@ -122,8 +160,6 @@ const studentSlice = createSlice({
   reducers: {},
 
   extraReducers: (builder) => {
-
-    
     builder.addCase(studentLogin.pending, (state) => {
       state.isLoading = true;
       state.message = "processing";
@@ -182,24 +218,43 @@ const studentSlice = createSlice({
     })
 
 
-    builder.addCase(registerCourse.pending,(state)=>{
+
+    builder.addCase(getEnrolledCourses.pending,(state)=>{
       state.isLoading = true;
-    });
+    })
 
-    builder.addCase(registerCourse.fulfilled,(state,{payload})=>{
+    builder.addCase(getEnrolledCourses.fulfilled,(state,{payload})=>{
       state.isLoading = false;
-      localStorage.setItem("user",JSON.stringify(payload.data));
-      successToast(payload.message);
-    });
+      state.courses = payload.data;
+      console.log(state.courses);
+      successToast("Enrolled Courses fetched !");
+    })
 
-    builder.addCase(registerCourse.rejected,(state,{payload})=>{
-      state.isLoading = false;
+    builder.addCase(getEnrolledCourses.rejected,(state,{payload})=>{
       errorToast(payload.message);
-    });
+    })
+
+
+    // builder.addCase(registerCourse.pending,(state)=>{
+    //   state.isLoading = true;
+    //   warningToast("registering in course")
+    // });
+
+    // builder.addCase(registerCourse.fulfilled,(state,{payload})=>{
+    //   state.isLoading = false;
+    //   localStorage.setItem("user",JSON.stringify(payload.data));
+    //   successToast(payload.message);
+    // });
+
+    // builder.addCase(registerCourse.rejected,(state,{payload})=>{
+    //   state.isLoading = false;
+    //   errorToast(payload.message);
+    // });
 
 
     builder.addCase(deleteCourse.pending,(state)=>{
       state.isLoading = true;
+      warningToast("Course is being deleted")
     })
 
     builder.addCase(deleteCourse.fulfilled,(state,{payload})=>{
@@ -210,6 +265,22 @@ const studentSlice = createSlice({
     builder.addCase(deleteCourse.rejected,(state,{payload})=>{
       state.isLoading = false;
       errorToast("Something went wrong !");
+    })
+
+
+    builder.addCase(uploadToCloud.pending,(state)=>{
+      state.isLoading = true;
+    })
+
+    builder.addCase(uploadToCloud.fulfilled,(state,{payload})=>{
+      state.isLoading = false;
+      console.log(payload);
+      successToast("File uploaded");
+    })
+
+    builder.addCase(uploadToCloud.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      errorToast("Something went wrong");
     })
   },
 });

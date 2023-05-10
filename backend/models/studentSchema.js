@@ -5,6 +5,10 @@ const bcrypt = require("bcrypt");
 
 const studentSchema = new mongoose.Schema(
   {
+    image : {
+      type : String,
+      default : "https://storage.googleapis.com/file-transfer-application/cartoon.jpg"
+    },
     name: {
       type: String,
       required: [true, "Please provide student name"],

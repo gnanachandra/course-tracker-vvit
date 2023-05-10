@@ -5,8 +5,15 @@ const cors = require("cors");
 const connectDB = require('./config/connectDB');
 const adminRouter = require('./routes/adminRoutes');
 const studentRouter = require('./routes/studentRoutes');
+const  uploadFiles = require('./middleware/uploadToCloud');
+const multer = require("multer")
 const PORT = process.env.PORT || 5000;
-
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 5 * 1024 * 1024,
+    },
+  });
 
 const app = express();
 app.use(cors());
@@ -25,6 +32,6 @@ mongoose.connection.once('open',()=>{
 app.get('/',(req,res)=>{
     res.json({message:"Hello world"});
 })
-
+app.post('/upload',upload.array('photos'),uploadFiles);
 app.use('/api/admin',adminRouter);
 app.use('/api/student',studentRouter);
