@@ -4,15 +4,7 @@ import EnrolledCourses from "./EnrolledCourses";
 const Welcome = () => {
   return (
     <div>
-      {/* <div>
-        Announcements
-      </div> */}
-      <div>
-        <EnrolledCourses/>
-      </div>
-      {/* <div>
-        Queries
-      </div> */}
+      Welcome
     </div>
   )
 }

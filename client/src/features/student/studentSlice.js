@@ -12,7 +12,8 @@ const initialState = {
   courses: [],
   message: "",
   catalog : [],
-  showCourseBackDrop : false
+  showCourseBackDrop : false,
+  isLoggedIn : false,
 };
 
 export const studentLogin = createAsyncThunk("/api/student/login",async (payload, { rejectWithValue }) => {
@@ -154,10 +155,56 @@ export const uploadToCloud = createAsyncThunk("/upload",async(file,{rejectWithVa
   }
 })
 
+export const getStudentProfile = createAsyncThunk("api/student/profile(get)",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.get("http://localhost:5000/api/student/profile",{
+      headers:{
+        Authorization : `Bearer ${token}`
+      }
+    })
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+export const updateStudentProfile = createAsyncThunk("/api/student/profile",async(payload,{rejectWithValue})=>{
+  console.log("Payload received in slice for update profile : ",payload);
+  try{
+    const response = await axios.patch("http://localhost:5000/api/student/profile",payload,{
+      headers:{
+        Authorization : `Bearer ${token}`
+      }
+    })
+    console.log("Response received for update profile : ",response.data);
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
 const studentSlice = createSlice({
   name: "student",
   initialState,
-  reducers: {},
+  reducers: {
+    logout : (state) => {
+      state.isLoggedIn = false;
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
+  },
 
   extraReducers: (builder) => {
     builder.addCase(studentLogin.pending, (state) => {
@@ -172,6 +219,7 @@ const studentSlice = createSlice({
       state.token = token;
       state.user = data;
       state.message = message;
+      state.isLoggedIn = true;
       successToast("Login Successful !");
     });
     builder.addCase(studentLogin.rejected, (state, { payload }) => {
@@ -231,6 +279,7 @@ const studentSlice = createSlice({
     })
 
     builder.addCase(getEnrolledCourses.rejected,(state,{payload})=>{
+      
       errorToast(payload.message);
     })
 
@@ -282,7 +331,23 @@ const studentSlice = createSlice({
       state.isLoading = false;
       errorToast("Something went wrong");
     })
+
+    builder.addCase(updateStudentProfile.pending,(state)=>{
+      state.isLoading = true;
+    })
+
+    builder.addCase(updateStudentProfile.fulfilled,(state,{payload})=>{
+      state.isLoading = false;
+      successToast(payload.message);
+      localStorage.setItem("user",JSON.stringify(payload.updatedData));
+      window.location.reload();
+    })
+
+    builder.addCase(updateStudentProfile.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      errorToast(payload.message);
+    })
   },
 });
-
+export const {logout} = studentSlice.actions
 export default studentSlice.reducer;

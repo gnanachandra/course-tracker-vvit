@@ -2,9 +2,10 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useState, useEffect, useRef } from "react";
-import { uploadToCloud } from "../../features/student/studentSlice";
+import { useState, useRef } from "react";
+import { updateStudentProfile, uploadToCloud } from "../../features/student/studentSlice";
 import BackDrop from "../../utils/BackDrop";
+import { Navigate } from 'react-router-dom'
 const branches = [
   "CSE",
   "IT",
@@ -18,8 +19,10 @@ const branches = [
   "CIVIL",
 ];
 const sections = ["A", "B", "C", "D"];
-const years = ["I", "II", "III", "IV"];
+const years = ['1','2','3','4'];
 const StudentProfile = () => {
+
+  const {isLoggedIn} = useSelector((store)=>store["student"])
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
   const { user } = useSelector((store) => store["student"]);
@@ -50,6 +53,9 @@ const StudentProfile = () => {
   const updateProfile = (e) => {
     e.preventDefault();
     setEditing(false);
+    console.log("updated Details : ",form);
+    console.log("Dispatching update profile")
+    dispatch(updateStudentProfile(form));
   };
 
   const handleFormChange = (e) => {
@@ -57,41 +63,36 @@ const StudentProfile = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  return (
-    <div className="pt-20 bg-gray-100 h-screen">
+  if(!isLoggedIn)
+  {
+    return <Navigate to="/login"/>
+  }
+  isLoggedIn && 
+  (
+    <div className="pt-20 bg-gray-100 min-h-screen">
       {/* Overall div */}
-      <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="grid grid-cols-1">
         {/* Image div */}
         <div className="flex items-center justify-center">
           {editing && (
             <div className="flex items-center justify-center flex-col gap-y-4">
               <img
                 src={form.image}
-                alt="student image"
+                alt="student"
                 className="rounded-full h-52 w-52 cursor-pointer"
                 onClick={handleClick}
               />
-              <input
-                type="button"
-                value={"Save Changes"}
-                onClick={updateProfile}
-                className="cursor-pointer bg-blue-500 p-4 rounded-md mt-2"
-              />
+              
             </div>
           )}
           {!editing && (
             <div className="flex items-center justify-center flex-col gap-y-4">
               <img
                 src={form.image}
-                alt="student image"
+                alt="student"
                 className="rounded-full h-52 w-52"
               />
-              <input
-                type="button"
-                value={"Edit profile"}
-                onClick={() => setEditing(true)}
-                className="cursor-pointer bg-blue-500 p-4 rounded-md mt-2"
-              />
+              
             </div>
           )}
           <input
@@ -110,7 +111,8 @@ const StudentProfile = () => {
             Student Details
           </h3>
           {!editing ? (
-            <div className="flex justify-around flex-row">
+            <>
+            <div className="flex justify-evenly flex-row">
               <div className="flex flex-col gap-y-4">
                 <label htmlFor="studentName" className="font-semibold text-xl">
                   Name
@@ -144,9 +146,16 @@ const StudentProfile = () => {
                 <p className="text-lg font-medium">{user.AICTEStudentID}</p>
               </div>
             </div>
+            <input
+            type="button"
+            value={"Edit profile"}
+            onClick={() => setEditing(true)}
+            className="cursor-pointer bg-blue-500 p-4 rounded-md absolute left-1/2 -translate-x-1/2 mt-5"
+            />
+             </>
           ) : (
-            <div className="w-5/6">
-              <form className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-x-10 gap-y-4">
+            <div className="flex items-center justify-center container">
+              <form className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-x-10 gap-y-4" onSubmit={(e)=>updateProfile(e)}>
                 <div className="flex justify-center gap-y-2 flex-col">
                   <label className="font-semibold" htmlFor="name">
                     Name
@@ -198,7 +207,7 @@ const StudentProfile = () => {
                     className="p-3 rounded-md shadow-md"
                     name="year"
                     onChange={handleFormChange}
-                    defaultValue={"Select Year"}
+                    value={form.year}
                   >
                     <option value="Select Year" key={"-1"} disabled>
                       Select Year
@@ -221,7 +230,7 @@ const StudentProfile = () => {
                     className="p-3 rounded-md shadow-md"
                     name="branch"
                     onChange={handleFormChange}
-                    defaultValue={"Select Branch"}
+                    value={form.branch}
                   >
                     <option value="Select Branch" key={"-1"} disabled>
                       Select Branch
@@ -244,7 +253,7 @@ const StudentProfile = () => {
                     className="p-3 rounded-md shadow-md"
                     name="section"
                     onChange={handleFormChange}
-                    defaultValue={"Select Section"}
+                    value={form.section}
                   >
                     <option value="Select Section" key={"-1"} disabled>
                       Select Section
@@ -271,6 +280,10 @@ const StudentProfile = () => {
                     placeholder="Enter AICTE ID"
                     onChange={handleFormChange}
                   />
+                  
+                </div>
+                <div className="flex items-center justify-center">
+                  <input type="submit" name="submit" value={"save changes"} className="bg-blue-400 h-1/2 w-2/3 cursor-pointer" onClick={updateProfile}/>
                 </div>
               </form>
             </div>

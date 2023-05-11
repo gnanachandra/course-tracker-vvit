@@ -285,9 +285,11 @@ const updateProfile = asyncHandler(async (req, res, next) => {
       runValidators: true,
       useFindAndModify: false,
     });
+    const updatedUser = await Student.findById(req.userId);
+
     return res
       .status(StatusCodes.OK)
-      .json({ message: "Profile Updated !", updatedData: response });
+      .json({ message: "Profile Updated !", updatedData: updatedUser });
   } catch (err) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
