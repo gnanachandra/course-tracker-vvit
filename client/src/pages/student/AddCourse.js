@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCatalogData, registerCourse } from "../../features/student/studentSlice";
 import BackDrop from "../../utils/BackDrop";
 import { ToastContainer } from "react-toastify";
+import { cancelAddCourse } from "../../features/student/studentSlice";
 const AddCourse = () => {
   const sems = ["1-1", "1-2", "2-1", "2-2", "3-1", "3-2", "4-1", "4-2"];
   const {isLoading} = useSelector((store)=>store["student"])
@@ -112,7 +113,7 @@ const AddCourse = () => {
                 type="button"
                 name="cancel"
                 value="Cancel"
-                onClick={handleSubmit}
+                onClick={() => dispatch(cancelAddCourse())}
                 className="bg-red-500 text-white text-md font-bold w-24 p-3 rounded-md mt-3 hover:bg-red-700 cursor-pointer"
                 />
             <input

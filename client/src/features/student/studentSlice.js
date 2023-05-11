@@ -76,7 +76,7 @@ export const getCatalogData = createAsyncThunk("api/student/catalog",async(paylo
   }
 })
 
-export const registerCourse = createAsyncThunk("api/student/course",async(payload,{rejectWithValue})=>{
+export const registerCourse = createAsyncThunk("api/student/course(post)",async(payload,{rejectWithValue})=>{
   console.log("register Course : ",payload);
   try{
     const response = await axios.post("http://localhost:5000/api/student/course",payload,{
@@ -117,7 +117,6 @@ export const deleteCourse = createAsyncThunk("api/student/course/:id",async(payl
 });
 
 export const getEnrolledCourses = createAsyncThunk("api/student/course",async(payload,{rejectWithValue})=>{
-  console.log("Get enrolled Courses payload : ",payload)
   try{
     const response = await axios.get("http://localhost:5000/api/student/course",{
       headers : {
@@ -203,10 +202,20 @@ const studentSlice = createSlice({
       state.isLoggedIn = false;
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+    },
+
+    cancelAddCourse : (state) => {
+      state.showCourseBackDrop = false;
+    },
+
+    handleAddCourse : (state) => {
+      state.showCourseBackDrop = true;
     }
   },
 
   extraReducers: (builder) => {
+
+    //login
     builder.addCase(studentLogin.pending, (state) => {
       state.isLoading = true;
       state.message = "processing";
@@ -230,7 +239,7 @@ const studentSlice = createSlice({
     });
 
 
-
+    //student registeration
     builder.addCase(studentRegisteration.pending,(state)=>{
       state.isLoading = true;
       state.message = "processing";
@@ -250,6 +259,8 @@ const studentSlice = createSlice({
     });
 
 
+
+    //getting catalog data
     builder.addCase(getCatalogData.pending,(state)=>{
       state.isLoading = true;
       state.message = "processing"
@@ -266,7 +277,7 @@ const studentSlice = createSlice({
     })
 
 
-
+    //getting enrolled courses
     builder.addCase(getEnrolledCourses.pending,(state)=>{
       state.isLoading = true;
     })
@@ -279,28 +290,32 @@ const studentSlice = createSlice({
     })
 
     builder.addCase(getEnrolledCourses.rejected,(state,{payload})=>{
-      
+      console.log(payload);
+      state.isLoading = false;
       errorToast(payload.message);
     })
 
 
-    // builder.addCase(registerCourse.pending,(state)=>{
-    //   state.isLoading = true;
-    //   warningToast("registering in course")
-    // });
+    //registering into course
+    builder.addCase(registerCourse.pending,(state)=>{
+      state.isLoading = true;
+      state.message = "registering in course"
+    });
 
-    // builder.addCase(registerCourse.fulfilled,(state,{payload})=>{
-    //   state.isLoading = false;
-    //   localStorage.setItem("user",JSON.stringify(payload.data));
-    //   successToast(payload.message);
-    // });
+    builder.addCase(registerCourse.fulfilled,(state,{payload})=>{
+      state.isLoading = false;
+      state.showCourseBackDrop = false;
+      localStorage.setItem("user",JSON.stringify(payload.data));
+      successToast(payload.message);
+    });
 
-    // builder.addCase(registerCourse.rejected,(state,{payload})=>{
-    //   state.isLoading = false;
-    //   errorToast(payload.message);
-    // });
+    builder.addCase(registerCourse.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      errorToast(payload.message);
+    });
 
 
+    //deleting a course
     builder.addCase(deleteCourse.pending,(state)=>{
       state.isLoading = true;
       warningToast("Course is being deleted")
@@ -316,7 +331,7 @@ const studentSlice = createSlice({
       errorToast("Something went wrong !");
     })
 
-
+    //uploading the photos of students to cloud
     builder.addCase(uploadToCloud.pending,(state)=>{
       state.isLoading = true;
     })
@@ -332,6 +347,8 @@ const studentSlice = createSlice({
       errorToast("Something went wrong");
     })
 
+
+    //updating student profile
     builder.addCase(updateStudentProfile.pending,(state)=>{
       state.isLoading = true;
     })
@@ -349,5 +366,5 @@ const studentSlice = createSlice({
     })
   },
 });
-export const {logout} = studentSlice.actions
+export const {logout,cancelAddCourse,handleAddCourse} = studentSlice.actions
 export default studentSlice.reducer;

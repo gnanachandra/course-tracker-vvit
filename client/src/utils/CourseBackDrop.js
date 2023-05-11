@@ -5,7 +5,7 @@ const CourseBackDrop = (props) => {
   return (
     <Backdrop
       sx={{ color: "white", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      open={true}
+      open={props.open}
     >
       <AddCourse/>
     </Backdrop>
