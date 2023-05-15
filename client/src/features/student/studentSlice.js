@@ -16,6 +16,7 @@ const initialState = {
   catalog : [],
   course : {},
   showCourseBackDrop : false,
+  showQueryBackDrop : false,
   isLoggedIn : user ? true : false
 };
 
@@ -236,6 +237,27 @@ export const updateStudentProfile = createAsyncThunk("/api/student/profile",asyn
   }
 })
 
+export const raiseQuery = createAsyncThunk("/api/student/query(post)",async(payload,{rejectWithValue})=>{
+  console.log("Raise query Payload : ",payload);
+  try{
+    const response = await axios.post("http://localhost:5000/api/student/query",payload,{
+      headers:{
+        Authorization : `Bearer ${token}`
+      }
+    })
+    console.log("Raise query Response : ",response.data);
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
 const studentSlice = createSlice({
   name: "student",
   initialState,
@@ -253,6 +275,14 @@ const studentSlice = createSlice({
     handleAddCourse : (state) => {
       state.showCourseBackDrop = true;
     },
+
+    handleRaiseQuery : (state) => {
+      state.showQueryBackDrop = true;
+    },
+
+    cancelRaiseQuery : (state) => {
+      state.showQueryBackDrop = false;
+    }
 
   },
 
@@ -440,7 +470,24 @@ const studentSlice = createSlice({
       state.isLoading = false;
       errorToast(payload.message);
     })
+
+    builder.addCase(raiseQuery.pending,(state)=>{
+      state.isLoading = true;
+    })
+
+    builder.addCase(raiseQuery.fulfilled,(state,{payload})=>{
+      state.isLoading = false;
+      state.showQueryBackDrop = false;
+      console.log("Raise query fulfilled payload : ",payload);
+      successToast("Query Raised !");
+    })
+
+    builder.addCase(raiseQuery.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      console.log("Raise query rejected paylaod : ",payload);
+      errorToast("Something went wrong !");
+    })
   },
 });
-export const {logout,cancelAddCourse,handleAddCourse,cancelEditCourse} = studentSlice.actions
+export const {logout,cancelAddCourse,handleAddCourse,cancelEditCourse,handleRaiseQuery,cancelRaiseQuery} = studentSlice.actions
 export default studentSlice.reducer;

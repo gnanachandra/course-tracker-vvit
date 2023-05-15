@@ -4,6 +4,7 @@ import {getIndividualCourseDetails, updateCourseDetails} from "../../features/st
 import BackDrop from "../../utils/BackDrop";
 import { ToastContainer } from "react-toastify";
 import { Link, useParams,Navigate, useNavigate } from "react-router-dom";
+import { errorToast } from "../../utils/toastHelper";
 
 const EditCourse = () => {
 	const navigate = useNavigate();
@@ -12,14 +13,17 @@ const EditCourse = () => {
   const { isLoading } = useSelector((store) => store["student"]);
 	const [certificateLink,setCertificateLink] = useState("");
 
-  useEffect(() => {
-    dispatch(getIndividualCourseDetails({ id }));
-  }, [dispatch,id]);
+  // useEffect(() => {
+  //   dispatch(getIndividualCourseDetails({ id }));
+  // }, [dispatch,id]);
 
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-		console.log(certificateLink);
+		if(certificateLink === "")
+    {
+      errorToast("Enter Certificate Link")
+    }
 		const response =await dispatch(updateCourseDetails({id,certificateLink}))
 		if(response.payload.status === "success")
 		{

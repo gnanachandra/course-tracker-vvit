@@ -22,6 +22,9 @@ const QuerySchema = new mongoose.Schema(
     adminMessage : {
       type : String,
       default : ""
+    },
+    image : {
+      type : String
     }
   },
   { timestamps: true }

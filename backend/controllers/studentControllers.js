@@ -118,26 +118,27 @@ const addCourseController = asyncHandler(async (req, res) => {
 
 //submit query
 const submitQuery = asyncHandler(async (req, res, next) => {
-  const { title, description } = req.body;
+  const { title, description,image } = req.body;
   const studentId = req.userId;
   if (!title || !description || !studentId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Fill all the details !" });
+      .json({ message: "Fill all the details !",status:"failed" });
   }
   try {
     const newQuery = await Query.create({
       title,
       description,
       student: studentId,
+      image
     });
     return res
       .status(StatusCodes.OK)
-      .json({ message: "New query submitted !" });
+      .json({ message: "New query submitted !",status:"success" });
   } catch (err) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: err.message });
+      .json({ message: err.message,status:"failed" });
   }
 });
 
