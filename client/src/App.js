@@ -8,6 +8,7 @@ import Queries from "./pages/student/Queries";
 import StudentLayout from "./pages/student/StudentLayout";
 import Courses from "./pages/student/Courses";
 import Annoucements from "./pages/student/Announcement"
+import EditCourse from "./pages/student/EditCourse";
 function App() {
   return (
     <Router>
@@ -19,6 +20,7 @@ function App() {
           <Route path="/login" element={<Login />}></Route>
           <Route path="/profile" element={<StudentProfile />}></Route>
           <Route path="/courses" element={<Courses/>}></Route>
+          <Route path="/courses/edit/:id" element={<EditCourse/>}></Route>
           <Route path="/queries" element={<Queries />}></Route>
           <Route path="/announcements" element={<Annoucements/>}></Route>
         </Route>

@@ -17,6 +17,9 @@ const Course = new mongoose.Schema({
     enrolledIn : {
         type : String,
         required : [true, "Provide Enrolled Semestern !"]
+    },
+    certificateLink : {
+        type : String,
     }
 });
 

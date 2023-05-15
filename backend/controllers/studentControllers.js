@@ -205,7 +205,11 @@ const getmyProfile = asyncHandler(async (req, res, next) => {
 const getCatalogData = asyncHandler(async(req,res) => {
   try{
       const data = await Catalog.find({}).select(["platformName",'courses']);
-      return res.status(StatusCodes.OK).json({message : "catalog sent",data});
+      const catalogData = {}
+      data.map((obj)=>{
+        catalogData[obj.platformName] = obj.courses
+      });
+      return res.status(StatusCodes.OK).json({message : "catalog sent",data:catalogData});
   }
   catch(err)
   {
@@ -229,6 +233,22 @@ const getEnrolledCourses = asyncHandler(async(req,res)=>{
   }
 })
 
+const getEnrolledCourseDetails = asyncHandler(async(req,res)=>{
+  if(!req.userId)
+  {
+    return res.status(StatusCodes.BAD_REQUEST).json({message : "Something went wrong"});
+  }
+  try{
+    const courseId = req.params.courseId;
+    const data = await Course.findById(courseId);
+    return res.status(StatusCodes.OK).json({message : "Course Details Sent !",data});
+  }
+  catch(err)
+  {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+  }
+})
+
 //UPDATE
 
 //update course
@@ -238,7 +258,7 @@ const updateCourse = asyncHandler(async (req, res, next) => {
   if (Object.keys(updatedData).length === 0) {
     return res
       .status(StatusCodes.OK)
-      .json({ message: "No change in details !" });
+      .json({ message: "No change in details !",status: "failed" });
   }
   if (!courseId) {
     return res
@@ -249,7 +269,7 @@ const updateCourse = asyncHandler(async (req, res, next) => {
   if (!courseData) {
     return res
       .status(StatusCodes.NOT_FOUND)
-      .json({ message: "Course not found !" });
+      .json({ message: "Course not found !" ,status: "failed"});
   }
   try {
     const response = await Course.findByIdAndUpdate(courseId, updatedData, {
@@ -257,11 +277,11 @@ const updateCourse = asyncHandler(async (req, res, next) => {
     });
     return res
       .status(StatusCodes.OK)
-      .json({ message: "Course details updated !", data: response });
+      .json({ message: "Course details updated !", data: response ,status:"success"});
   } catch (err) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: err.message });
+      .json({ message: err.message,status: "failed" });
   }
 });
 
@@ -363,6 +383,7 @@ module.exports = {
   getmyProfile,
   getCatalogData,
   getEnrolledCourses, 
+  getEnrolledCourseDetails,
   updateProfile,
   updatePassword,
   updateCourse,

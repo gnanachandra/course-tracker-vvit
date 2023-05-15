@@ -9,6 +9,7 @@ const AddCourse = () => {
   const {isLoading} = useSelector((store)=>store["student"])
   const { catalog } = useSelector((store) => store["student"]);
   const dispatch = useDispatch();
+  const platforms = Object.keys(catalog);
   const [courses, setCourses] = useState([]);
   const [form, setForm] = useState({
     platform: "",
@@ -22,10 +23,7 @@ const AddCourse = () => {
   
   const handlePlatformChange = (e) => {
     const platformName = e.target.value;
-    const platform = catalog.find((item) => item.platformName === platformName);
-    if (platform) {
-      setCourses(platform.courses);
-    }
+    setCourses(catalog[platformName]);
   };
 
   const handleFormChange = (e) => {
@@ -55,10 +53,10 @@ const AddCourse = () => {
               <option value="Select Platform" key={"-1"} disabled className="text-black">
                 Select Platform
               </option>
-              {catalog.map((item, index) => {
+              {platforms.map((platformName, index) => {
                 return (
-                  <option value={item.platformName} key={index} className="text-black">
-                    {item.platformName}
+                  <option value={platformName} key={index} className="text-black">
+                    {platformName}
                   </option>
                 );
               })}

@@ -3,6 +3,8 @@ import axios from "axios";
 import { errorToast, successToast, warningToast } from "../../utils/toastHelper";
 
 
+
+
 const user = localStorage.getItem("user");
 const token = localStorage.getItem("token");
 const initialState = {
@@ -12,8 +14,9 @@ const initialState = {
   courses: [],
   message: "",
   catalog : [],
+  course : {},
   showCourseBackDrop : false,
-  isLoggedIn : false,
+  isLoggedIn : user ? true : false
 };
 
 export const studentLogin = createAsyncThunk("/api/student/login",async (payload, { rejectWithValue }) => {
@@ -134,6 +137,45 @@ export const getEnrolledCourses = createAsyncThunk("api/student/course",async(pa
   }
 })
 
+export const getIndividualCourseDetails = createAsyncThunk("api/student/course/:courseId(get)",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.get(`http://localhost:5000/api/student/course/${payload.id}`,{
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    });
+    console.log("Individual Course Details : ",response.data);
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response){
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+//adding certificate link 
+export const updateCourseDetails = createAsyncThunk("api/student/course/:courseId(patch)",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.patch(`http://localhost:5000/api/student/course/${payload.id}`,payload,{
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    })
+    console.log("Update course response : ",response.data);
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response){
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
 export const uploadToCloud = createAsyncThunk("/upload",async(file,{rejectWithValue})=>{
   const formData = new FormData();
   formData.append("photos", file);
@@ -210,7 +252,8 @@ const studentSlice = createSlice({
 
     handleAddCourse : (state) => {
       state.showCourseBackDrop = true;
-    }
+    },
+
   },
 
   extraReducers: (builder) => {
@@ -268,6 +311,7 @@ const studentSlice = createSlice({
 
     builder.addCase(getCatalogData.fulfilled,(state,{payload})=>{
       state.catalog = payload.data;
+      console.log(payload.data);
       state.isLoading = false;
     })
 
@@ -285,7 +329,7 @@ const studentSlice = createSlice({
     builder.addCase(getEnrolledCourses.fulfilled,(state,{payload})=>{
       state.isLoading = false;
       state.courses = payload.data;
-      console.log(state.courses);
+      // console.log(state.courses);
       successToast("Enrolled Courses fetched !");
     })
 
@@ -293,6 +337,21 @@ const studentSlice = createSlice({
       console.log(payload);
       state.isLoading = false;
       errorToast(payload.message);
+    })
+
+    builder.addCase(getIndividualCourseDetails.pending,(state)=>{
+      state.isLoading = true;
+    })
+
+    builder.addCase(getIndividualCourseDetails.fulfilled,(state,payload)=>{
+      state.isLoading = false;
+      state.course = payload.data;
+      successToast("Individual course Details Fetched !");
+    })
+
+    builder.addCase(getIndividualCourseDetails.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      errorToast("Something went wrong !");
     })
 
 
@@ -314,6 +373,22 @@ const studentSlice = createSlice({
       errorToast(payload.message);
     });
 
+    builder.addCase(updateCourseDetails.pending,(state)=>{
+      state.isLoading = true;
+    })
+
+    builder.addCase(updateCourseDetails.fulfilled,(state,{payload})=>{
+      state.isLoading = false;
+      console.log("update course success payload : ",payload);
+      successToast("Certificate Link Added !");
+    })
+
+    builder.addCase(updateCourseDetails.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      console.log("Update Course Rejected payload : ",payload);
+      errorToast("Something went wrong !")
+    })
+
 
     //deleting a course
     builder.addCase(deleteCourse.pending,(state)=>{
@@ -324,6 +399,7 @@ const studentSlice = createSlice({
     builder.addCase(deleteCourse.fulfilled,(state,{payload})=>{
       state.isLoading = false;
       successToast("Course Deleted !");
+      window.location.reload();
     });
 
     builder.addCase(deleteCourse.rejected,(state,{payload})=>{
@@ -366,5 +442,5 @@ const studentSlice = createSlice({
     })
   },
 });
-export const {logout,cancelAddCourse,handleAddCourse} = studentSlice.actions
+export const {logout,cancelAddCourse,handleAddCourse,cancelEditCourse} = studentSlice.actions
 export default studentSlice.reducer;

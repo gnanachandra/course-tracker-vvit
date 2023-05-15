@@ -28,14 +28,14 @@ const StudentProfile = () => {
   const { user } = useSelector((store) => store["student"]);
   const { isLoading } = useSelector((store) => store["student"]);
   const [form, setForm] = useState({
-    name: user.name,
-    email: user.email,
-    rollNo: user.rollNo,
-    branch: user.branch,
-    section: user.section,
-    year: user.year,
-    image: user.image,
-    AICTEStudentID: user.AICTEStudentID,
+    name: user?.name,
+    email: user?.email,
+    rollNo: user?.rollNo,
+    branch: user?.branch,
+    section: user?.section,
+    year: user?.year,
+    image: user?.image,
+    AICTEStudentID: user?.AICTEStudentID,
   });
 
   const [editing, setEditing] = useState(false);
@@ -67,6 +67,7 @@ const StudentProfile = () => {
   {
     return <Navigate to="/login"/>
   }
+  return (
   isLoggedIn && 
   (
     <div className="pt-20 bg-gray-100 min-h-screen">
@@ -163,7 +164,7 @@ const StudentProfile = () => {
                   <input
                     type="text"
                     name="name"
-                    value={form.name}
+                    value={form?.name}
                     className="color-white shadow-md p-4 rounded-md active:shadow-none"
                     placeholder="Enter your name"
                     onChange={handleFormChange}
@@ -294,6 +295,7 @@ const StudentProfile = () => {
       <BackDrop open={isLoading} />
       <ToastContainer />
     </div>
+  )
   );
 };
 
