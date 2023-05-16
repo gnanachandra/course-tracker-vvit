@@ -9,6 +9,7 @@ const { handleNewStudent,
     updatePassword,
     getEnrolledCourses,
     getEnrolledCourseDetails,
+    getMyQueries,
     updateCourse,
     deleteCourse,
     getCatalogData
@@ -22,5 +23,5 @@ router.route('/course/:courseId').patch(isAuthenticated,updateCourse).delete(isA
 router.route('/profile').get(isAuthenticated,getmyProfile).patch(isAuthenticated,updateProfile)
 router.route('/catalog').get(getCatalogData);
 router.route('/profile/password').post(isAuthenticated,updatePassword)
-router.route('/query').post(isAuthenticated,submitQuery)
+router.route('/queries').post(isAuthenticated,submitQuery).get(isAuthenticated,getMyQueries);
 module.exports = router;

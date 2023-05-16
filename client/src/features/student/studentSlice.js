@@ -15,6 +15,8 @@ const initialState = {
   message: "",
   catalog : [],
   course : {},
+  activeQueries : [],
+  resolvedQueries : [],
   showCourseBackDrop : false,
   showQueryBackDrop : false,
   isLoggedIn : user ? true : false
@@ -240,12 +242,32 @@ export const updateStudentProfile = createAsyncThunk("/api/student/profile",asyn
 export const raiseQuery = createAsyncThunk("/api/student/query(post)",async(payload,{rejectWithValue})=>{
   console.log("Raise query Payload : ",payload);
   try{
-    const response = await axios.post("http://localhost:5000/api/student/query",payload,{
+    const response = await axios.post("http://localhost:5000/api/student/queries",payload,{
       headers:{
         Authorization : `Bearer ${token}`
       }
     })
     console.log("Raise query Response : ",response.data);
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+export const getQueries = createAsyncThunk("api/student/queries(get)",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.get("http://localhost:5000/api/student/queries",{
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    })
+    console.log("GetMy queries response : ",response.data);
     return response.data;
   }
   catch(error)
@@ -486,6 +508,22 @@ const studentSlice = createSlice({
       state.isLoading = false;
       console.log("Raise query rejected paylaod : ",payload);
       errorToast("Something went wrong !");
+    })
+
+    builder.addCase(getQueries.pending,(state)=>{
+      state.isLoading = true;
+    })
+
+    builder.addCase(getQueries.fulfilled,(state,{payload})=>{
+      state.isLoading = false;
+      state.activeQueries = payload.activeQueries;
+      state.resolvedQueries = payload.resolvedQueries;
+      console.log("Fullfilled get my queries payload : ",payload);
+    })
+
+    builder.addCase(getQueries.rejected,(state,{payload})=>{
+      state.isLoading = false;
+      console.log("Get my queries rejected payload : ",payload);
     })
   },
 });

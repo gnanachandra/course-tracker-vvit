@@ -5,6 +5,7 @@ const Query = require("../models/QuerySchema");
 const asyncHandler = require("express-async-handler");
 const { StatusCodes } = require("http-status-codes");
 const Catalog = require("../models/CourseCatalog");
+
 /*
 
 CREATE - handlenewstudent, add course handler, submit query
@@ -234,6 +235,7 @@ const getEnrolledCourses = asyncHandler(async(req,res)=>{
   }
 })
 
+//get individual course details
 const getEnrolledCourseDetails = asyncHandler(async(req,res)=>{
   if(!req.userId)
   {
@@ -243,6 +245,24 @@ const getEnrolledCourseDetails = asyncHandler(async(req,res)=>{
     const courseId = req.params.courseId;
     const data = await Course.findById(courseId);
     return res.status(StatusCodes.OK).json({message : "Course Details Sent !",data});
+  }
+  catch(err)
+  {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message : err.message});
+  }
+})
+
+//get all queries
+const getMyQueries = asyncHandler(async(req,res)=>{
+  const id = req.userId;
+  if(!id)
+  {
+    return res.status(StatusCodes.UNAUTHORIZED).json({message : "Unauthorized !"});
+  }
+  try{
+    const activeQueries = await Query.find({student:id,active : true});
+    const resolvedQueries = await Query.find({student:id,active : false});
+    return res.status(StatusCodes.OK).json({message : "Queries sent",activeQueries,resolvedQueries });
   }
   catch(err)
   {
@@ -385,6 +405,7 @@ module.exports = {
   getCatalogData,
   getEnrolledCourses, 
   getEnrolledCourseDetails,
+  getMyQueries,
   updateProfile,
   updatePassword,
   updateCourse,
