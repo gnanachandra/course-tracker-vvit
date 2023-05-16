@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCatalogData, registerCourse } from "../../features/student/studentSlice";
+import { getCatalogData, registerCourse,cancelAddCourse } from "../../features/student/studentSlice";
 import BackDrop from "../../utils/BackDrop";
 import { ToastContainer } from "react-toastify";
-import { cancelAddCourse } from "../../features/student/studentSlice";
+import "react-toastify/dist/ReactToastify.css";
+
 const AddCourse = () => {
+
   const sems = ["1-1", "1-2", "2-1", "2-2", "3-1", "3-2", "4-1", "4-2"];
-  const {isLoading} = useSelector((store)=>store["student"])
-  const { catalog } = useSelector((store) => store["student"]);
+  const {isLoading,catalog} = useSelector((store)=>store["student"])
   const dispatch = useDispatch();
   const platforms = Object.keys(catalog);
   const [courses, setCourses] = useState([]);

@@ -6,6 +6,7 @@ import { studentRegisteration } from '../../features/student/studentSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import BackDrop from "../../utils/BackDrop";
+
 const branches = ['CSE','IT','ECE','EEE','CSM','AID','IOT','CIC','MECH','CIVIL']
 const sections = ['A','B','C','D']
 const years = ['I','II','III','IV']

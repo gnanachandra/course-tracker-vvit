@@ -1,5 +1,5 @@
 import React from 'react'
-import EnrolledCourses from "./EnrolledCourses";
+
 
 const Welcome = () => {
   return (

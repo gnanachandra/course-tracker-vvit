@@ -2,11 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { errorToast, successToast, warningToast } from "../../utils/toastHelper";
 
-
-
-
 const user = localStorage.getItem("user");
 const token = localStorage.getItem("token");
+
 const initialState = {
   user: user ? JSON.parse(user) : null,
   token: token,
@@ -22,26 +20,11 @@ const initialState = {
   isLoggedIn : user ? true : false
 };
 
-export const studentLogin = createAsyncThunk("/api/student/login",async (payload, { rejectWithValue }) => {
-    console.log(payload);
-    try {
-      const response = await axios.post('http://localhost:5000/api/student/login', payload,{
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-        },
-      });
-      console.log(response);
-      return response.data;
-    } catch (error) {
-      console.log(error);
-      if (!error?.response) {
-        throw error;
-      }
-      return rejectWithValue(error?.response?.data);
-    }
-  }
-);
+//create read update delte
 
+//create - student registeration, raise query, add course,upload to cloud
+
+//student registeration
 export const studentRegisteration = createAsyncThunk("/api/student/register",async(payload,{rejectWithValue})=>{
   console.log("Payload for registeration : ",payload);
   try{
@@ -63,182 +46,7 @@ export const studentRegisteration = createAsyncThunk("/api/student/register",asy
   }
 })
 
-export const getCatalogData = createAsyncThunk("api/student/catalog",async(payload,{rejectWithValue})=>{
-  try{
-    const response = await axios.get("http://localhost:5000/api/student/catalog",{
-      headers : {
-        "Content-Type": "application/json; charset=UTF-8",
-      },
-    })
-   return response.data;  
-  }
-  catch(error)
-  {
-    if(!error?.response)
-    {
-      throw error;
-    }
-    return rejectWithValue(error?.response?.data);
-  }
-})
-
-export const registerCourse = createAsyncThunk("api/student/course(post)",async(payload,{rejectWithValue})=>{
-  console.log("register Course : ",payload);
-  try{
-    const response = await axios.post("http://localhost:5000/api/student/course",payload,{
-      headers:{
-        Authorization : `Bearer ${token}`
-      }
-    });
-    return response.data;
-  }
-  catch(error)
-  {
-    if(!error?.response)
-    {
-      throw error;
-    }
-    return rejectWithValue(error?.response?.data);
-  }
-});
-
-export const deleteCourse = createAsyncThunk("api/student/course/:id",async(payload,{rejectWithValue})=>{
-  console.log("Delete course Payload : ",payload);
-  try{
-    const response = await axios.delete(`http://localhost:5000/api/student/course/${payload.id}`,{
-      headers : {
-        Authorization : `Bearer ${token}`
-      }
-    });
-    return response.data;
-  }
-  catch(error)
-  {
-    if(!error?.response)
-    {
-      throw error;
-    }
-    return rejectWithValue(error?.response?.data);
-  }
-});
-
-export const getEnrolledCourses = createAsyncThunk("api/student/course",async(payload,{rejectWithValue})=>{
-  try{
-    const response = await axios.get("http://localhost:5000/api/student/course",{
-      headers : {
-        Authorization : `Bearer ${token}`
-      }
-    });
-    return response.data;
-  }
-  catch(error)
-  {
-    if(!error?.response){
-      throw error;
-    }
-    return rejectWithValue(error?.response?.data);
-  }
-})
-
-export const getIndividualCourseDetails = createAsyncThunk("api/student/course/:courseId(get)",async(payload,{rejectWithValue})=>{
-  try{
-    const response = await axios.get(`http://localhost:5000/api/student/course/${payload.id}`,{
-      headers : {
-        Authorization : `Bearer ${token}`
-      }
-    });
-    console.log("Individual Course Details : ",response.data);
-    return response.data;
-  }
-  catch(error)
-  {
-    if(!error?.response){
-      throw error;
-    }
-    return rejectWithValue(error?.response?.data);
-  }
-})
-
-//adding certificate link 
-export const updateCourseDetails = createAsyncThunk("api/student/course/:courseId(patch)",async(payload,{rejectWithValue})=>{
-  try{
-    const response = await axios.patch(`http://localhost:5000/api/student/course/${payload.id}`,payload,{
-      headers : {
-        Authorization : `Bearer ${token}`
-      }
-    })
-    console.log("Update course response : ",response.data);
-    return response.data;
-  }
-  catch(error)
-  {
-    if(!error?.response){
-      throw error;
-    }
-    return rejectWithValue(error?.response?.data);
-  }
-})
-
-export const uploadToCloud = createAsyncThunk("/upload",async(file,{rejectWithValue})=>{
-  const formData = new FormData();
-  formData.append("photos", file);
-  try{
-    const response = await axios.post("http://localhost:5000/upload", formData,{
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  }
-  catch(error)
-  {
-    if (!error?.response) {
-      throw error;
-    }
-    return rejectWithValue(error?.response?.data);
-  }
-})
-
-export const getStudentProfile = createAsyncThunk("api/student/profile(get)",async(payload,{rejectWithValue})=>{
-  try{
-    const response = await axios.get("http://localhost:5000/api/student/profile",{
-      headers:{
-        Authorization : `Bearer ${token}`
-      }
-    })
-    return response.data;
-  }
-  catch(error)
-  {
-    if(!error?.response)
-    {
-      throw error;
-    }
-    return rejectWithValue(error?.response?.data);
-  }
-})
-
-export const updateStudentProfile = createAsyncThunk("/api/student/profile",async(payload,{rejectWithValue})=>{
-  console.log("Payload received in slice for update profile : ",payload);
-  try{
-    const response = await axios.patch("http://localhost:5000/api/student/profile",payload,{
-      headers:{
-        Authorization : `Bearer ${token}`
-      }
-    })
-    console.log("Response received for update profile : ",response.data);
-    return response.data;
-  }
-  catch(error)
-  {
-    if(!error?.response)
-    {
-      throw error;
-    }
-    return rejectWithValue(error?.response?.data);
-  }
-})
-
+//raise query
 export const raiseQuery = createAsyncThunk("/api/student/query(post)",async(payload,{rejectWithValue})=>{
   console.log("Raise query Payload : ",payload);
   try{
@@ -260,6 +68,152 @@ export const raiseQuery = createAsyncThunk("/api/student/query(post)",async(payl
   }
 })
 
+//add course
+export const registerCourse = createAsyncThunk("api/student/course(post)",async(payload,{rejectWithValue})=>{
+  console.log("register Course : ",payload);
+  try{
+    const response = await axios.post("http://localhost:5000/api/student/course",payload,{
+      headers:{
+        Authorization : `Bearer ${token}`
+      }
+    });
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+});
+
+//upload to cloud
+export const uploadToCloud = createAsyncThunk("/upload",async(file,{rejectWithValue})=>{
+  const formData = new FormData();
+  formData.append("photos", file);
+  try{
+    const response = await axios.post("http://localhost:5000/upload", formData,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  }
+  catch(error)
+  {
+    if (!error?.response) {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+
+//read - login, get catalog data, get enrolled courses,get individual course, get queries,get student profile
+
+//student login
+export const studentLogin = createAsyncThunk("/api/student/login",async (payload, { rejectWithValue }) => {
+    console.log(payload);
+    try {
+      const response = await axios.post('http://localhost:5000/api/student/login', payload,{
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      if (!error?.response) {
+        throw error;
+      }
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+//get catalog data
+export const getCatalogData = createAsyncThunk("api/student/catalog",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.get("http://localhost:5000/api/student/catalog",{
+      headers : {
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    })
+   return response.data;  
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+//get enrolled course details
+export const getEnrolledCourses = createAsyncThunk("api/student/course",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.get("http://localhost:5000/api/student/course",{
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    });
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response){
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+//get individual course details
+export const getIndividualCourseDetails = createAsyncThunk("api/student/course/:courseId(get)",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.get(`http://localhost:5000/api/student/course/${payload.id}`,{
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    });
+    console.log("Individual Course Details : ",response.data);
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response){
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+//get student profile
+export const getStudentProfile = createAsyncThunk("api/student/profile(get)",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.get("http://localhost:5000/api/student/profile",{
+      headers:{
+        Authorization : `Bearer ${token}`
+      }
+    })
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+//get queries
 export const getQueries = createAsyncThunk("api/student/queries(get)",async(payload,{rejectWithValue})=>{
   try{
     const response = await axios.get("http://localhost:5000/api/student/queries",{
@@ -279,6 +233,75 @@ export const getQueries = createAsyncThunk("api/student/queries(get)",async(payl
     return rejectWithValue(error?.response?.data);
   }
 })
+
+
+//update - update course (add certificate link),update profile
+
+//adding certificate link 
+export const updateCourseDetails = createAsyncThunk("api/student/course/:courseId(patch)",async(payload,{rejectWithValue})=>{
+  try{
+    const response = await axios.patch(`http://localhost:5000/api/student/course/${payload.id}`,payload,{
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    })
+    console.log("Update course response : ",response.data);
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response){
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+//update student profile
+export const updateStudentProfile = createAsyncThunk("/api/student/profile",async(payload,{rejectWithValue})=>{
+  console.log("Payload received in slice for update profile : ",payload);
+  try{
+    const response = await axios.patch("http://localhost:5000/api/student/profile",payload,{
+      headers:{
+        Authorization : `Bearer ${token}`
+      }
+    })
+    console.log("Response received for update profile : ",response.data);
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+})
+
+
+//delete = delete course
+
+export const deleteCourse = createAsyncThunk("api/student/course/:id",async(payload,{rejectWithValue})=>{
+  console.log("Delete course Payload : ",payload);
+  try{
+    const response = await axios.delete(`http://localhost:5000/api/student/course/${payload.id}`,{
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    });
+    return response.data;
+  }
+  catch(error)
+  {
+    if(!error?.response)
+    {
+      throw error;
+    }
+    return rejectWithValue(error?.response?.data);
+  }
+});
+
 
 const studentSlice = createSlice({
   name: "student",
@@ -391,6 +414,7 @@ const studentSlice = createSlice({
       errorToast(payload.message);
     })
 
+    //individual course details
     builder.addCase(getIndividualCourseDetails.pending,(state)=>{
       state.isLoading = true;
     })
@@ -425,6 +449,8 @@ const studentSlice = createSlice({
       errorToast(payload.message);
     });
 
+
+    //updating course details
     builder.addCase(updateCourseDetails.pending,(state)=>{
       state.isLoading = true;
     })
@@ -493,6 +519,8 @@ const studentSlice = createSlice({
       errorToast(payload.message);
     })
 
+
+    //raise query
     builder.addCase(raiseQuery.pending,(state)=>{
       state.isLoading = true;
     })
@@ -509,6 +537,8 @@ const studentSlice = createSlice({
       console.log("Raise query rejected paylaod : ",payload);
       errorToast("Something went wrong !");
     })
+
+    //get queries
 
     builder.addCase(getQueries.pending,(state)=>{
       state.isLoading = true;

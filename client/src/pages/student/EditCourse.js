@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {getIndividualCourseDetails, updateCourseDetails} from "../../features/student/studentSlice";
+import { updateCourseDetails} from "../../features/student/studentSlice";
 import BackDrop from "../../utils/BackDrop";
 import { ToastContainer } from "react-toastify";
-import { Link, useParams,Navigate, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { errorToast } from "../../utils/toastHelper";
 
 const EditCourse = () => {
@@ -12,10 +12,6 @@ const EditCourse = () => {
   const { id } = useParams();
   const { isLoading } = useSelector((store) => store["student"]);
 	const [certificateLink,setCertificateLink] = useState("");
-
-  // useEffect(() => {
-  //   dispatch(getIndividualCourseDetails({ id }));
-  // }, [dispatch,id]);
 
 
   const handleSubmit = async(e) => {
