@@ -7,16 +7,19 @@ import {
   getQueries,
   handleRaiseQuery,
 } from "../../features/student/studentSlice";
-const Queries = () => {
+import BackDrop from "../../utils/BackDrop";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+const StudentQueries = () => {
   const { showQueryBackDrop } = useSelector((store) => store["student"]);
   const { isLoggedIn } = useSelector((store) => store["student"]);
   const dispatch = useDispatch();
   const { activeQueries } = useSelector((store) => store["student"]);
   const { resolvedQueries } = useSelector((store) => store["student"]);
-
+  const {isLoading} = useSelector((store)=>store["student"]);
   useEffect(() => {
     dispatch(getQueries());
-  }, []);
+  }, [dispatch]);
 
   if (!isLoggedIn) {
     warningToast("Login to access !");
@@ -43,7 +46,7 @@ const Queries = () => {
           {activeQueries &&
             activeQueries.map((query, index) => {
               return (
-                <div className={`grid grid-cols-1 ${query.image !== "" ? "md:grid-cols-2" : "md:grid-cols-1"} md:grid-cols-2 gap-5 bg-white lg:w-4/5 gap-y-4 rounded-xl shadow-lg mt-8 py-8 px-10 md:px-16 mb-4 m-auto hover:shadow-xl`}>
+                <div className={`grid grid-cols-1 ${query.image !== "" ? "md:grid-cols-2" : "md:grid-cols-1"} gap-5 bg-white lg:w-4/5 gap-y-4 rounded-xl shadow-lg mt-8 py-8 px-10 md:px-16 mb-4 m-auto hover:shadow-xl`}>
                   {/* Info about query */}
                   <section>
                     <div>
@@ -73,7 +76,7 @@ const Queries = () => {
           
           resolvedQueries.map((query,index)=>{
             return (
-              <div className={`grid grid-cols-1 ${query.image !== "" ? "md:grid-cols-2" : "md:grid-cols-1"} md:grid-cols-2 gap-5 bg-white lg:w-4/5 gap-y-4 rounded-xl shadow-lg mt-8 py-8 px-10 md:px-16 mb-4 m-auto hover:shadow-xl`}>
+              <div className={`grid grid-cols-1 ${query.image !== "" ? "md:grid-cols-2" : "md:grid-cols-1"}  gap-5 bg-white lg:w-4/5 gap-y-4 rounded-xl shadow-lg mt-8 py-8 px-10 md:px-16 mb-4 m-auto hover:shadow-xl`}>
                   {/* Info about query */}
                   <section>
                     <div>
@@ -99,8 +102,10 @@ const Queries = () => {
         </div>
       </div>
       <QueryBackDrop open={showQueryBackDrop} />
+      <BackDrop open={isLoading}/>
+      <ToastContainer/>
     </section>
   );
 };
 
-export default Queries;
+export default StudentQueries;

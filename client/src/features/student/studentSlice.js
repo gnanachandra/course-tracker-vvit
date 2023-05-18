@@ -348,6 +348,7 @@ const studentSlice = createSlice({
       state.message = message;
       state.isLoggedIn = true;
       successToast("Login Successful !");
+      window.location.reload();
     });
     builder.addCase(studentLogin.rejected, (state, { payload }) => {
       state.isLoading = false;
@@ -548,7 +549,7 @@ const studentSlice = createSlice({
       state.isLoading = false;
       state.activeQueries = payload.activeQueries;
       state.resolvedQueries = payload.resolvedQueries;
-      console.log("Fullfilled get my queries payload : ",payload);
+      successToast("Queries Fetched !")
     })
 
     builder.addCase(getQueries.rejected,(state,{payload})=>{

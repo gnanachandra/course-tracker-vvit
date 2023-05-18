@@ -1,41 +1,49 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateCourseDetails} from "../../features/student/studentSlice";
+import { updateCourseDetails } from "../../features/student/studentSlice";
 import BackDrop from "../../utils/BackDrop";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { errorToast } from "../../utils/toastHelper";
 
 const EditCourse = () => {
-	const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
   const { isLoading } = useSelector((store) => store["student"]);
-	const [certificateLink,setCertificateLink] = useState("");
+  const [certificateLink, setCertificateLink] = useState("");
 
-
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-		if(certificateLink === "")
-    {
-      errorToast("Enter Certificate Link")
+    if (certificateLink === "") {
+      errorToast("Enter Certificate Link");
     }
-		const response =await dispatch(updateCourseDetails({id,certificateLink}))
-		if(response.payload.status === "success")
-		{
-			navigate("/courses");
-		}
+    const response = await dispatch(
+      updateCourseDetails({ id, certificateLink })
+    );
+    if (response.payload.status === "success") {
+      navigate("/courses");
+    }
   };
 
   return (
-    <div className="flex items-center justify-center flex-col gap-y-5 bg-gray-100  p-10">
+    <div className="flex items-center justify-center flex-col gap-y-5 bg-red-100  p-10 h-screen overflow-hidden">
       <div className="w-auto">
         <form className="grid sm:grid-cols-1 gap-x-10 gap-y-4">
           <h2 className="font-bold text-black text-xl text-center">
             Add Certificate Link
           </h2>
-          <label htmlFor="certificate link" className="font-semibold">Certificate Link</label>
-					<input type="text" name="certificateLink" value={certificateLink} className="rounded-md" onChange={(e)=>setCertificateLink(e.target.value)}/>
+          <label htmlFor="certificate link" className="font-semibold">
+            Certificate Link
+          </label>
+          <input
+            type="text"
+            name="certificateLink"
+            value={certificateLink}
+            className="rounded-md"
+            onChange={(e) => setCertificateLink(e.target.value)}
+          />
           <div className="flex justify-center gap-x-5 px-8">
             <Link to="/courses">
               <input

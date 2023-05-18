@@ -5,7 +5,7 @@ import BackDrop from "../../utils/BackDrop";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const AddCourse = () => {
+const RegisterCourse = () => {
 
   const sems = ["1-1", "1-2", "2-1", "2-2", "3-1", "3-2", "4-1", "4-2"];
   const {isLoading,catalog} = useSelector((store)=>store["student"])
@@ -131,4 +131,4 @@ const AddCourse = () => {
   );
 };
 
-export default AddCourse;
+export default RegisterCourse;

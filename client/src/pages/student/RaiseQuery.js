@@ -47,7 +47,6 @@ const RaiseQuery = () => {
             <h2 className="font-bold text-black text-xl text-center">
               Raise Query
             </h2>
-
             <div className="flex  justify-center gap-y-2 flex-col">
               <label className="font-semibold text-black" htmlFor="query title">
                 Title

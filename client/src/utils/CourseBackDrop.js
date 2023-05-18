@@ -1,13 +1,13 @@
 import React from "react";
 import Backdrop from '@mui/material/Backdrop';
-import AddCourse from "../pages/student/AddCourse";
+import RegisterCourse from "../pages/student/RegisterCourse";
 const CourseBackDrop = (props) => {
   return (
     <Backdrop
       sx={{ color: "white", zIndex: (theme) => theme.zIndex.drawer + 1 }}
       open={props.open}
     >
-      <AddCourse/>
+      <RegisterCourse/>
     </Backdrop>
   );
 };

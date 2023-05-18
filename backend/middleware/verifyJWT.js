@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const isAuthenticated = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
+  //console.log("Auth header : ",authHeader);
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(400).json({Error: "Bearer token missing!"});
   }

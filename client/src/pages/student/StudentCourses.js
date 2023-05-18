@@ -10,7 +10,7 @@ import {FaEdit} from "react-icons/fa";
 import {MdDelete} from "react-icons/md";
 import { getEnrolledCourses, handleAddCourse,deleteCourse } from '../../features/student/studentSlice';
 
-const Courses = () => {
+const StudentCourses = () => {
   const dispatch = useDispatch();
   const {courses} = useSelector((store)=>store["student"]);
   const {isLoading} = useSelector((store)=>store["student"]);
@@ -88,4 +88,4 @@ const Courses = () => {
   )
 }
 
-export default Courses
+export default StudentCourses;
