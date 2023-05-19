@@ -28,7 +28,7 @@ const initialState = {
 export const studentRegisteration = createAsyncThunk("/api/student/register",async(payload,{rejectWithValue})=>{
   console.log("Payload for registeration : ",payload);
   try{
-    const response = await axios.post('http://localhost:5000/api/student/register',payload,{
+    const response = await axios.post('https://course-tracker-2003.el.r.appspot.com/api/student/register',payload,{
       headers : {
         "Content-Type": "application/json; charset=UTF-8",
       },
@@ -50,7 +50,7 @@ export const studentRegisteration = createAsyncThunk("/api/student/register",asy
 export const raiseQuery = createAsyncThunk("/api/student/query(post)",async(payload,{rejectWithValue})=>{
   console.log("Raise query Payload : ",payload);
   try{
-    const response = await axios.post("http://localhost:5000/api/student/queries",payload,{
+    const response = await axios.post("https://course-tracker-2003.el.r.appspot.com/api/student/queries",payload,{
       headers:{
         Authorization : `Bearer ${token}`
       }
@@ -72,7 +72,7 @@ export const raiseQuery = createAsyncThunk("/api/student/query(post)",async(payl
 export const registerCourse = createAsyncThunk("api/student/course(post)",async(payload,{rejectWithValue})=>{
   console.log("register Course : ",payload);
   try{
-    const response = await axios.post("http://localhost:5000/api/student/course",payload,{
+    const response = await axios.post("https://course-tracker-2003.el.r.appspot.com/api/student/course",payload,{
       headers:{
         Authorization : `Bearer ${token}`
       }
@@ -94,7 +94,7 @@ export const uploadToCloud = createAsyncThunk("/upload",async(file,{rejectWithVa
   const formData = new FormData();
   formData.append("photos", file);
   try{
-    const response = await axios.post("http://localhost:5000/upload", formData,{
+    const response = await axios.post("https://course-tracker-2003.el.r.appspot.com/upload", formData,{
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -117,7 +117,7 @@ export const uploadToCloud = createAsyncThunk("/upload",async(file,{rejectWithVa
 export const studentLogin = createAsyncThunk("/api/student/login",async (payload, { rejectWithValue }) => {
     console.log(payload);
     try {
-      const response = await axios.post('http://localhost:5000/api/student/login', payload,{
+      const response = await axios.post('https://course-tracker-2003.el.r.appspot.com/api/student/login', payload,{
         headers: {
           "Content-type": "application/json; charset=UTF-8",
         },
@@ -137,7 +137,7 @@ export const studentLogin = createAsyncThunk("/api/student/login",async (payload
 //get catalog data
 export const getCatalogData = createAsyncThunk("api/student/catalog",async(payload,{rejectWithValue})=>{
   try{
-    const response = await axios.get("http://localhost:5000/api/student/catalog",{
+    const response = await axios.get("https://course-tracker-2003.el.r.appspot.com/api/student/catalog",{
       headers : {
         "Content-Type": "application/json; charset=UTF-8",
       },
@@ -157,7 +157,7 @@ export const getCatalogData = createAsyncThunk("api/student/catalog",async(paylo
 //get enrolled course details
 export const getEnrolledCourses = createAsyncThunk("api/student/course",async(payload,{rejectWithValue})=>{
   try{
-    const response = await axios.get("http://localhost:5000/api/student/course",{
+    const response = await axios.get("https://course-tracker-2003.el.r.appspot.com/api/student/course",{
       headers : {
         Authorization : `Bearer ${token}`
       }
@@ -176,7 +176,7 @@ export const getEnrolledCourses = createAsyncThunk("api/student/course",async(pa
 //get individual course details
 export const getIndividualCourseDetails = createAsyncThunk("api/student/course/:courseId(get)",async(payload,{rejectWithValue})=>{
   try{
-    const response = await axios.get(`http://localhost:5000/api/student/course/${payload.id}`,{
+    const response = await axios.get(`https://course-tracker-2003.el.r.appspot.com/api/student/course/${payload.id}`,{
       headers : {
         Authorization : `Bearer ${token}`
       }
@@ -196,7 +196,7 @@ export const getIndividualCourseDetails = createAsyncThunk("api/student/course/:
 //get student profile
 export const getStudentProfile = createAsyncThunk("api/student/profile(get)",async(payload,{rejectWithValue})=>{
   try{
-    const response = await axios.get("http://localhost:5000/api/student/profile",{
+    const response = await axios.get("https://course-tracker-2003.el.r.appspot.com/api/student/profile",{
       headers:{
         Authorization : `Bearer ${token}`
       }
@@ -216,7 +216,7 @@ export const getStudentProfile = createAsyncThunk("api/student/profile(get)",asy
 //get queries
 export const getQueries = createAsyncThunk("api/student/queries(get)",async(payload,{rejectWithValue})=>{
   try{
-    const response = await axios.get("http://localhost:5000/api/student/queries",{
+    const response = await axios.get("https://course-tracker-2003.el.r.appspot.com/api/student/queries",{
       headers : {
         Authorization : `Bearer ${token}`
       }
@@ -240,7 +240,7 @@ export const getQueries = createAsyncThunk("api/student/queries(get)",async(payl
 //adding certificate link 
 export const updateCourseDetails = createAsyncThunk("api/student/course/:courseId(patch)",async(payload,{rejectWithValue})=>{
   try{
-    const response = await axios.patch(`http://localhost:5000/api/student/course/${payload.id}`,payload,{
+    const response = await axios.patch(`https://course-tracker-2003.el.r.appspot.com/api/student/course/${payload.id}`,payload,{
       headers : {
         Authorization : `Bearer ${token}`
       }
@@ -261,7 +261,7 @@ export const updateCourseDetails = createAsyncThunk("api/student/course/:courseI
 export const updateStudentProfile = createAsyncThunk("/api/student/profile",async(payload,{rejectWithValue})=>{
   console.log("Payload received in slice for update profile : ",payload);
   try{
-    const response = await axios.patch("http://localhost:5000/api/student/profile",payload,{
+    const response = await axios.patch("https://course-tracker-2003.el.r.appspot.com/api/student/profile",payload,{
       headers:{
         Authorization : `Bearer ${token}`
       }
@@ -285,7 +285,7 @@ export const updateStudentProfile = createAsyncThunk("/api/student/profile",asyn
 export const deleteCourse = createAsyncThunk("api/student/course/:id",async(payload,{rejectWithValue})=>{
   console.log("Delete course Payload : ",payload);
   try{
-    const response = await axios.delete(`http://localhost:5000/api/student/course/${payload.id}`,{
+    const response = await axios.delete(`https://course-tracker-2003.el.r.appspot.com/api/student/course/${payload.id}`,{
       headers : {
         Authorization : `Bearer ${token}`
       }

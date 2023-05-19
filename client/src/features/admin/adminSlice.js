@@ -20,3 +20,70 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { errorToast, successToast, warningToast } from "../../utils/toastHelper";
+
+const user = localStorage.getItem("user");
+const token = localStorage.getItem("token");
+
+const initialState = {
+    user: user ? JSON.parse(user) : null,
+    token: token,
+    isLoading: false,
+    isLoggedIn : user ? true : false
+};
+
+
+export const adminLogin = createAsyncThunk("api/admin/login(post)",async(payload,{rejectWithValue})=>{
+    console.log("Admin Login Payload : ",payload);
+    try{
+        const response = await axios.post("http://localhost:5000/api/admin/login",payload,{
+            headers : {
+                Authorization : `Bearer ${token}`
+            }
+        })
+        console.log("Admin login response : ",response.data);
+        return response.data;
+    }
+    catch(error)
+    {
+        if(!error?.response)
+        {
+            throw error;
+        }
+        return rejectWithValue(error?.response?.data);
+    }
+})
+
+
+const adminSlice = createSlice({
+    name : "admin",
+    initialState,
+    reducers : {},
+    extraReducers : (builder) => {
+
+        builder.addCase(adminLogin.pending,(state)=>{
+            state.isLoading = true;
+        })
+
+        builder.addCase(adminLogin.fulfilled,(state,{payload})=>{
+            state.isLoading = false;
+            console.log("Payload : ",payload);
+            const user = payload.adminData;
+            const token = payload.token;
+            console.log("User : ",user);
+            localStorage.setItem("user",JSON.stringify(user));
+            localStorage.setItem("token",token);
+            state.user = user;
+            state.token = token;
+            successToast("Login Successful");
+        })
+
+        builder.addCase(adminLogin.rejected,(state,{payload})=>{
+            state.isLoading = false;
+            console.log("Admin Login rejected Payload : ",payload);
+            errorToast("Invalid Credentials");
+        })
+
+    }
+})
+
+export default adminSlice.reducer;

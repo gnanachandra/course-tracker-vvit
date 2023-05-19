@@ -21,6 +21,7 @@ import Platforms from "./admin/Platforms";
 import Courses from "./admin/Courses";
 import AdminDashBoard from "./admin/AdminDashBoard";
 import AdminLayout from "../components/AdminLayout";
+import AdminLogin from "./admin/AdminLogin";
 export {
   Login,
   Register,
@@ -37,5 +38,6 @@ export {
   Platforms,
   Courses,
   AdminDashBoard,
+  AdminLogin,
   AdminLayout,
 };

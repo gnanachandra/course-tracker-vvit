@@ -1,32 +1,28 @@
-import React, { useEffect, useState } from "react";
-import {useDispatch, useSelector} from "react-redux";
-import { studentLogin } from "../../features/student/studentSlice";
-import {useNavigate} from "react-router-dom";
+import React,{useEffect,useState} from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BackDrop from "../../utils/BackDrop";
+import { useSelector,useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {adminLogin} from "../../features/admin/adminSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const {isLoading} = useSelector((store)=>store["student"]);
-  const user = useSelector((store)=>store["student"].user);
+  const {isLoading} = useSelector((store)=>store["admin"]);
+  const user = useSelector((store)=>store["admin"].user);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-      dispatch(studentLogin({email,password}));
-    // else if(userType === "admin")
-    //   dispatch(adminLogin(email,password));
-    
+      dispatch(adminLogin({email,password}));
   };
 
   useEffect(() => { 
     if (user) {
       setTimeout(() => {
-        navigate("/profile");
+        navigate("/admin/");
       }, 1000);
     }
   }, [user,navigate]);

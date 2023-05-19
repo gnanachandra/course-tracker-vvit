@@ -1,8 +1,15 @@
 import React from 'react'
+import AdminHeader from './AdminHeader'
+import { Outlet } from 'react-router-dom'
 
 const AdminLayout = () => {
   return (
-    <div>AdminLayout</div>
+    <>
+      <AdminHeader/>
+      <section>
+        <Outlet/>
+      </section>
+    </>
   )
 }
 
