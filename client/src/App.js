@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 //student imports
 import {StudentLayout,Welcome,Register,Login,StudentProfile,StudentCourses,EditCourse,StudentQueries} from "./pages/imports"
 //admin imports
-import {AdminLayout,AdminDashBoard,Student,Students,AdminQueries,Platforms,Courses,AdminLogin} from "./pages/imports";
+import {AdminLayout,Student,Students,AdminQueries,Platforms,Courses,AdminLogin} from "./pages/imports";
+import DemoElement from "./utils/DemoElement";
+import AdminDashBoard from "./components/AdminDashBoard";
 function App() {
   return (
     <Router>
@@ -20,7 +22,9 @@ function App() {
         </Route>
 
         <Route path="/admin" element={<AdminLayout/>}>
-          <Route path="/admin" index element={<AdminDashBoard/>}></Route>
+          <Route path="/admin" element={<AdminDashBoard/>}>
+            <Route path="count/:id" element={<DemoElement/>}></Route>
+          </Route>
           <Route path="login" element={<AdminLogin/>}></Route>
           <Route path="students" element={<Students/>}></Route>
           <Route path="student/:id" element={<Student/>}></Route>
