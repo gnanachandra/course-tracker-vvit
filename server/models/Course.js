@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Student = require("../models/StudentSchema");
+const Student = require("./StudentSchema");
 
 const Course = new mongoose.Schema({
     student : {
