@@ -52,7 +52,7 @@ export const raiseQuery = createAsyncThunk("/api/student/query(post)",async(payl
   try{
     const response = await axios.post("https://course-tracker-2003.el.r.appspot.com/api/student/queries",payload,{
       headers:{
-        Authorization : `Bearer ${token}`
+        Authorization : `Bearer ${localStorage.getItem("token")}`
       }
     })
     console.log("Raise query Response : ",response.data);
@@ -74,7 +74,7 @@ export const registerCourse = createAsyncThunk("api/student/course(post)",async(
   try{
     const response = await axios.post("https://course-tracker-2003.el.r.appspot.com/api/student/course",payload,{
       headers:{
-        Authorization : `Bearer ${token}`
+        Authorization : `Bearer ${localStorage.getItem("token")}`
       }
     });
     return response.data;
@@ -96,7 +96,7 @@ export const uploadToCloud = createAsyncThunk("/upload",async(file,{rejectWithVa
   try{
     const response = await axios.post("https://course-tracker-2003.el.r.appspot.com/upload", formData,{
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
     return response.data;
@@ -159,7 +159,7 @@ export const getEnrolledCourses = createAsyncThunk("api/student/course",async(pa
   try{
     const response = await axios.get("https://course-tracker-2003.el.r.appspot.com/api/student/course",{
       headers : {
-        Authorization : `Bearer ${token}`
+        Authorization : `Bearer ${localStorage.getItem("token")}`
       }
     });
     return response.data;
@@ -178,7 +178,7 @@ export const getIndividualCourseDetails = createAsyncThunk("api/student/course/:
   try{
     const response = await axios.get(`https://course-tracker-2003.el.r.appspot.com/api/student/course/${payload.id}`,{
       headers : {
-        Authorization : `Bearer ${token}`
+        Authorization : `Bearer ${localStorage.getItem("token")}`
       }
     });
     console.log("Individual Course Details : ",response.data);
@@ -198,7 +198,7 @@ export const getStudentProfile = createAsyncThunk("api/student/profile(get)",asy
   try{
     const response = await axios.get("https://course-tracker-2003.el.r.appspot.com/api/student/profile",{
       headers:{
-        Authorization : `Bearer ${token}`
+        Authorization : `Bearer ${localStorage.getItem("token")}`
       }
     })
     return response.data;
@@ -218,7 +218,7 @@ export const getQueries = createAsyncThunk("api/student/queries(get)",async(payl
   try{
     const response = await axios.get("https://course-tracker-2003.el.r.appspot.com/api/student/queries",{
       headers : {
-        Authorization : `Bearer ${token}`
+        Authorization : `Bearer ${localStorage.getItem("token")}`
       }
     })
     console.log("GetMy queries response : ",response.data);
@@ -242,7 +242,7 @@ export const updateCourseDetails = createAsyncThunk("api/student/course/:courseI
   try{
     const response = await axios.patch(`https://course-tracker-2003.el.r.appspot.com/api/student/course/${payload.id}`,payload,{
       headers : {
-        Authorization : `Bearer ${token}`
+        Authorization : `Bearer ${localStorage.getItem("token")}`
       }
     })
     console.log("Update course response : ",response.data);
@@ -263,7 +263,7 @@ export const updateStudentProfile = createAsyncThunk("/api/student/profile",asyn
   try{
     const response = await axios.patch("https://course-tracker-2003.el.r.appspot.com/api/student/profile",payload,{
       headers:{
-        Authorization : `Bearer ${token}`
+        Authorization : `Bearer ${localStorage.getItem("token")}`
       }
     })
     console.log("Response received for update profile : ",response.data);
@@ -287,7 +287,7 @@ export const deleteCourse = createAsyncThunk("api/student/course/:id",async(payl
   try{
     const response = await axios.delete(`https://course-tracker-2003.el.r.appspot.com/api/student/course/${payload.id}`,{
       headers : {
-        Authorization : `Bearer ${token}`
+        Authorization : `Bearer ${localStorage.getItem("token")}`
       }
     });
     return response.data;
